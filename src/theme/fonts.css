@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'Franklin Gothic Book';
+    src: url('FranklinGothic-Book.woff2') format('woff2'),
+        url('FranklinGothic-Book.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}

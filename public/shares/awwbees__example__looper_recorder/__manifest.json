@@ -1,0 +1,252 @@
+{
+    "audio_samples": [],
+    "author": [
+        "Awwbees"
+    ],
+    "bsk_content": {
+        "modules": [
+            {
+                "comment": "click on the rolling buffer to capture input loops retroactively",
+                "name": "comment",
+                "position": [
+                    822.0,
+                    112.0
+                ],
+                "type": "comment"
+            },
+            {
+                "comment": "input from a microphone or audio interface",
+                "name": "comment2",
+                "position": [
+                    47.0,
+                    259.0
+                ],
+                "type": "comment"
+            },
+            {
+                "comment": "enable \"pass\" above to unmute the input",
+                "name": "comment3",
+                "position": [
+                    39.0,
+                    543.0
+                ],
+                "type": "comment"
+            },
+            {
+                "comment": "click \"go\" on the looper rewriter to overwrite the loop buffer with any applied effects",
+                "name": "comment4",
+                "position": [
+                    515.0,
+                    880.0
+                ],
+                "type": "comment"
+            },
+            {
+                "comment": "after rewriting a loop, set the above send back to zero to route the looper output through the effects again",
+                "name": "comment5",
+                "position": [
+                    514.0,
+                    926.0
+                ],
+                "type": "comment"
+            },
+            {
+                "effects": [
+                    {
+                        "type": "muter"
+                    },
+                    {
+                        "type": "gate"
+                    }
+                ],
+                "name": "effectchain",
+                "position": [
+                    36.0,
+                    401.0
+                ],
+                "showspawnlist": true,
+                "target": "looperrecorder",
+                "type": "effectchain",
+                "widecount": 5
+            },
+            {
+                "effects": [
+                    {
+                        "type": "biquad"
+                    },
+                    {
+                        "type": "delay"
+                    }
+                ],
+                "name": "effectchain2",
+                "position": [
+                    509.0,
+                    712.0
+                ],
+                "showspawnlist": true,
+                "target": "looperrewriter",
+                "type": "effectchain",
+                "widecount": 5
+            },
+            {
+                "effects": [
+                    {
+                        "type": "biquad"
+                    },
+                    {
+                        "type": "delay"
+                    }
+                ],
+                "name": "effectchain3",
+                "position": [
+                    1038.0,
+                    702.0
+                ],
+                "showspawnlist": true,
+                "target": "looperrewriter2",
+                "type": "effectchain",
+                "widecount": 5
+            },
+            {
+                "name": "gain",
+                "position": [
+                    276.0,
+                    923.0
+                ],
+                "target": "output 1",
+                "type": "gain"
+            },
+            {
+                "name": "input",
+                "position": [
+                    126.0,
+                    314.0
+                ],
+                "target": "effectchain",
+                "type": "input"
+            },
+            {
+                "decay": 0.0,
+                "name": "looper",
+                "position": [
+                    641.0,
+                    371.0
+                ],
+                "target": "send",
+                "type": "looper"
+            },
+            {
+                "decay": 0.0,
+                "name": "looper2",
+                "position": [
+                    1208.0,
+                    350.0
+                ],
+                "target": "send2",
+                "type": "looper"
+            },
+            {
+                "headphonestarget": "",
+                "loopers": [
+                    "looper",
+                    "looper2",
+                    "",
+                    ""
+                ],
+                "name": "looperrecorder",
+                "outputtarget": "",
+                "position": [
+                    513.0,
+                    93.0
+                ],
+                "target": "gain",
+                "type": "looperrecorder"
+            },
+            {
+                "looper": "looper",
+                "name": "looperrewriter",
+                "position": [
+                    832.0,
+                    764.0
+                ],
+                "target": "gain",
+                "type": "looperrewriter"
+            },
+            {
+                "looper": "looper2",
+                "name": "looperrewriter2",
+                "position": [
+                    1367.0,
+                    758.0
+                ],
+                "target": "gain",
+                "type": "looperrewriter"
+            },
+            {
+                "channels": 0,
+                "name": "output 1",
+                "position": [
+                    305.0,
+                    1004.0
+                ],
+                "target": "",
+                "type": "output"
+            },
+            {
+                "name": "scale",
+                "position": [
+                    158.0,
+                    95.0
+                ],
+                "type": "scale"
+            },
+            {
+                "name": "send",
+                "position": [
+                    685.0,
+                    582.0
+                ],
+                "target": "effectchain2",
+                "target2": "looperrewriter",
+                "type": "send"
+            },
+            {
+                "name": "send2",
+                "position": [
+                    1251.0,
+                    590.0
+                ],
+                "target": "effectchain3",
+                "target2": "looperrewriter2",
+                "type": "send"
+            },
+            {
+                "name": "transport",
+                "position": [
+                    14.0,
+                    95.0
+                ],
+                "type": "transport"
+            }
+        ],
+        "rev": 420,
+        "zoomlocations": []
+    },
+    "bsk_path": "example__looper_recorder.bsk",
+    "html": "<h1>How it works</h1>\n<p>BLA BLA BLA</p>\n<h1>What you need</h1>\n<p>BLA BLA BLA</p>",
+    "publish": "2021-10-06T18:22:57.637210",
+    "rev": 1,
+    "summary": [
+        "An example patch for looper"
+    ],
+    "tags": [
+        "looper",
+        "default"
+    ],
+    "title": [
+        "Example Looper Recorder"
+    ],
+    "version": [
+        "1"
+    ]
+}

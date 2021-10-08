@@ -1,0 +1,17 @@
+.react-flow__handle {
+    opacity: 0;
+}
+
+.mdContent h1 {
+    font-weight: bold;
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    margin-top: 12px;
+}
+  
+.mdContent h2 {
+    font-weight: 500;
+    font-size: 1.2rem;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}

@@ -1,0 +1,13 @@
+html {
+    background: #161616;
+    color: #FFF;
+    font-size: 14px;
+}
+  
+body {
+    margin: 0;
+    font-family: 'Franking Gothic Book', Arial, Helvetica, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+  
