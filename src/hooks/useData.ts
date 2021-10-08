@@ -17,6 +17,10 @@ export interface IUseData {
   getPatchInfo: (patchId: string) => Promise<Patch | null>;
 }
 
+const REPO =
+  process.env.REPO ||
+  "https://fredericlb.github.io/BespokeSynth-Community-Sharing-Repo/";
+
 export const DataContext = createContext<Partial<IUseData>>({});
 
 const useData = (): IUseData => {
@@ -29,7 +33,7 @@ const useData = (): IUseData => {
   const load = useCallback(() => {
     const f = async () => {
       try {
-        const resp = await fetch("/shares/manifest.json");
+        const resp = await fetch(`${REPO}manifest.json`);
         const ps = await resp.json();
         setPatches(ps);
         setIsError(false);
@@ -87,10 +91,10 @@ const useData = (): IUseData => {
   );
 
   const getPatchInfo = useCallback(async (patchId: string) => {
-    const projectFolder = `/shares/${patchId}/`;
+    const projectFolder = `${REPO}${patchId}/`;
     try {
       const data = (await (
-        await fetch(`${projectFolder}__manifest.json`)
+        await fetch(`${projectFolder}manifest.json`)
       ).json()) as Patch;
       const scripts = data.bsk_content.modules
         .filter(({ script }) => script != null)

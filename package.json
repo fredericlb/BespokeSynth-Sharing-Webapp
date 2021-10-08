@@ -2,7 +2,7 @@
   "name": "bespoke-sharing-webapp",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://fredericlb.github.io/Bespoke-Sharing-Webapp",
+  "homepage": ".",
 
   "dependencies": {
     "@emotion/react": "^11.4.1",
