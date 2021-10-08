@@ -6,6 +6,7 @@ import Error from "./components/Error";
 import Header from "./components/Header";
 import Loader from "./components/Loader";
 import Section from "./components/Section";
+import Config from "./config";
 import useData, { DataContext } from "./hooks/useData";
 import initLocales from "./i18n";
 import Home from "./pages/Home";
@@ -41,7 +42,7 @@ const Inner: React.FC = () => {
 
 const App: React.FC = () => (
   <ThemeProvider applyTo="body" theme={myTheme}>
-    <Router>
+    <Router basename={Config.basePath}>
       <Inner />
     </Router>
   </ThemeProvider>

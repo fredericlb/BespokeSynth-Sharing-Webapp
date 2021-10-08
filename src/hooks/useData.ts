@@ -1,5 +1,6 @@
 import { createContext, useCallback, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
+import Config from "../config";
 import { Patch, PatchSummary } from "./patch.types";
 
 type PatchesDict = Record<string, PatchSummary>;
@@ -17,9 +18,7 @@ export interface IUseData {
   getPatchInfo: (patchId: string) => Promise<Patch | null>;
 }
 
-const REPO =
-  process.env.REPO ||
-  "https://fredericlb.github.io/BespokeSynth-Community-Sharing-Repo/";
+const REPO = Config.repo;
 
 export const DataContext = createContext<Partial<IUseData>>({});
 
