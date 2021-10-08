@@ -1,8 +1,11 @@
 import { mergeStyleSets } from "@fluentui/merge-styles";
 
 const modalStyles = mergeStyleSets({
+  docBodyFix: {
+    paddingRight: 18,
+  },
   container: {
-    maxWidth: "80vw",
+    maxWidth: "70vw",
     background: "#343434",
   },
   header: [
@@ -18,6 +21,8 @@ const modalStyles = mergeStyleSets({
     flex: "4 4 auto",
     padding: "0 24px 24px 24px",
     overflowY: "hidden",
+    maxHeight: "50vh",
+    minHeight: "50vh",
     selectors: {
       p: { margin: "14px 0" },
       "p:first-child": { marginTop: 0 },
@@ -40,9 +45,8 @@ const modalStyles = mergeStyleSets({
     color: "#676767",
   },
   textRead: {
-    maxHeight: 500,
-    minHeight: 120,
     minWidth: "40vw",
+    maxHeight: "50vh",
     overflowY: "scroll",
     overflowX: "auto",
     fontFamily: "monospace",

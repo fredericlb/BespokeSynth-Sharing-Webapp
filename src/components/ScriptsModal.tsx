@@ -6,7 +6,7 @@ import {
   PivotItem,
   PrimaryButton,
 } from "@fluentui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
@@ -18,6 +18,20 @@ const ScriptsModal: React.FC<{
   onEnd: (valid: boolean) => void;
 }> = ({ scripts, onClose = () => {}, onEnd }) => {
   const { t } = useTranslation();
+  useEffect(() => {
+    const hasVerticalScrollbar =
+      document.body.scrollHeight > document.body.clientHeight;
+
+    if (hasVerticalScrollbar) {
+      document.body.classList.add($.docBodyFix);
+    }
+
+    return () => {
+      if (hasVerticalScrollbar) {
+        document.body.classList.remove($.docBodyFix);
+      }
+    };
+  });
   return (
     <Modal
       isOpen
