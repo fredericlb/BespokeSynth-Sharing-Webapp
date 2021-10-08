@@ -2,6 +2,8 @@
   "name": "bespoke-sharing-webapp",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://fredericlb.github.io/Bespoke-Sharing-Webapp",
+
   "dependencies": {
     "@emotion/react": "^11.4.1",
     "@fluentui/merge-styles": "^8.2.0",
@@ -56,21 +58,24 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-unused-imports": "1.1.5",
+    "gh-pages": "^3.2.3",
     "husky": "^7.0.1",
+    "i18next": "^21.2.4",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.2",
     "stylelint": "^13.13.1",
     "stylelint-config-idiomatic-order": "^8.1.0",
     "stylelint-config-prettier": "^8.0.2",
-    "stylelint-prettier": "^1.2.0",
-    "i18next": "^21.2.4"
+    "stylelint-prettier": "^1.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "husky": {
     "hooks": {
