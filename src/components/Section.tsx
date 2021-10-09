@@ -9,9 +9,12 @@ const $ = mergeStyleSets({
     paddingLeft: 20,
     paddingRight: 20,
     margin: "auto",
-
+    marginBottom: 30,
+    boxSizing: "border-box",
+    minHeight: "calc(100vh - 80px)",
     [MOBILE]: {
       paddingTop: 70,
+      minHeight: "calc(100vh - 100px)",
     },
   },
 });

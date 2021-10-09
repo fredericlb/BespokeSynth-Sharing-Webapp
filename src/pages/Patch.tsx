@@ -100,7 +100,7 @@ const PatchPage: React.FC = () => {
 
   useEffect(() => {
     const f = async () => {
-      setFullPatch(await getPatchInfo(id));
+      setFullPatch(await getPatchInfo(`${id}`));
     };
     f();
   }, [getPatchInfo, id]);

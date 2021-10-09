@@ -3,6 +3,7 @@ import { initializeIcons } from "@uifabric/icons";
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Error from "./components/Error";
+import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Loader from "./components/Loader";
 import Section from "./components/Section";
@@ -33,9 +34,18 @@ const Inner: React.FC = () => {
             <Route exact path="/" component={Home} />
             <Route path="/search/:searchState" component={Home} />
             <Route path="/patch/:id" component={Patch} />
+            <Route
+              path="*"
+              render={() => (
+                <div style={{ marginTop: 120, textAlign: "center" }}>
+                  Page not found :(
+                </div>
+              )}
+            />
           </Switch>
         </Section>
       )}
+      <Footer />
     </DataContext.Provider>
   );
 };

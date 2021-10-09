@@ -1,15 +1,18 @@
 import { mergeStyleSets } from "@fluentui/merge-styles";
 import React from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 
 const $ = mergeStyleSets({
   error: {
-    background: "red",
+    background: "#aa0000",
     padding: 50,
   },
   errorFull: {
+    pointerEvents: "none",
     width: "100vw",
-    height: "100vh",
+    height: "calc(100vh - 50px)",
+    marginTop: 50,
     position: "fixed",
     top: 0,
     display: "flex",
@@ -23,13 +26,14 @@ const $ = mergeStyleSets({
 
 const Error: React.FC = () => {
   const { t } = useTranslation();
-  return (
+  return createPortal(
     <div className={$.errorFull}>
       <div className={$.error}>
         <div className={$.title}>{t("Error.title")}</div>
         <div>{t("Error.content")}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

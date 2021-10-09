@@ -8,6 +8,10 @@ export default {
     back: "Patch list",
   },
 
+  PatchList: {
+    no_patches: "No patches found",
+  },
+
   About: {
     title: "About",
     description: "Lorem Ipsum",
@@ -39,5 +43,9 @@ export default {
     are not Python saavy please ask someone on the Discord community.`,
     cancel: "Cancel",
     download: "Download",
+  },
+
+  Footer: {
+    text: "2021 - Bespoke/Community is an open source project (MIT licence)",
   },
 };

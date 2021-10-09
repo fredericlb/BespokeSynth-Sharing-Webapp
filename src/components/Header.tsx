@@ -4,6 +4,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import { DataContext, IUseData } from "../hooks/useData";
+import { MOBILE } from "../theme/constants";
 
 const $ = mergeStyleSets({
   root: {
@@ -13,7 +14,7 @@ const $ = mergeStyleSets({
     paddingRight: 10,
   },
   form: {
-    "@media screen and (max-width: 600px)": {
+    [MOBILE]: {
       marginTop: 0,
     },
   },
@@ -27,7 +28,7 @@ const $ = mergeStyleSets({
     zIndex: 1111,
     position: "fixed",
     top: 0,
-    "@media screen and (max-width: 600px)": {
+    [MOBILE]: {
       height: 80,
     },
   },
