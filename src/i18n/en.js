@@ -14,7 +14,11 @@ export default {
 
   About: {
     title: "About",
-    description: "Lorem Ipsum",
+    description:
+      'Bespoke/Community is a place for Bespoke users to publicly share their favorite patches. It is currently a work in progress and while it should work it’s still missing some common features. <a href="https://github.com/BespokeSynth/BespokeSynth">Bespoke</a> and <a href="https://github.com/fredericlb/BespokeSynth-Sharing-Webapp">Bespoke/Community</a> are open source softwares.',
+    upload_title: "upload",
+    upload:
+      'In this first version the process is fully manual. You have to do a pull request on <a href="https://github.com/fredericlb/BespokeSynth-Community-Sharing-Repo">this repository</a>, which contains every patches listed by Bespoke/Community. Instructions are included in the README of the repository. If all these words does not make sense to you, you can contact me (@phr__) on <a href="https://discord.gg/YdTMkvvpZZ">Bespoke’s Discord</a>. ',
   },
 
   Error: {
