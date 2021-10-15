@@ -52,4 +52,49 @@ export default {
   Footer: {
     text: "2021 - Bespoke/Community is an open source project (MIT licence)",
   },
+
+  Upload: {
+    button: "upload",
+    name: "upload",
+    metadata: "Metadata",
+    patchTitle: "Title *",
+    patchAuthor: "Author name *",
+    patchMail: "Author mail *",
+    patchMailDescription:
+      "A confirmation link will be sent prior to patch upload",
+    patchTags: "Tags (one word each, separated by comma)",
+    patchSummary: "A short summary (240 chars max) *",
+    attachments: "Attachments",
+    description: "Description",
+    descriptionDescription:
+      "A long description (optional) -- You can use Markdown here",
+    send: "Upload",
+    attachmentsDescription:
+      "You must add only one bsk file, and optionally multiple audio samples (mp3) + one image for cover",
+    quota: "Quota (max size for all files is 70mb) :",
+    dropInstruction: "Drop the files here ...",
+    noFiles: "No file added",
+    dragInstruction: "Drag 'n' drop some files here, or click to select files",
+    waitingForMail: "[1/2] Waiting for you to click on the mail validation",
+    sendingPatch: "[2/2] Sending patch, please wait",
+    error: "Something bad happened, you can try to submit your patch again",
+    finished:
+      "Patch successfully sent, you will receive an email once its been validated",
+  },
+
+  Form: {
+    required: "This field is mandatory",
+    minLength: "This field must contains at least 3 characters",
+    mail: "Must be a valid mail",
+    tags: "Must be one word, separated with commas (max 5)",
+    maxLength: "The field should be maximum {{len}} characters",
+  },
+
+  Attachments: {
+    noBSK: "Missing BSK file",
+    tooMuchBSKs: "Only one BSK file is allowed",
+    tooMuchImages: "Only one image file is allowed",
+    imageSize: "Max image size is 1mb",
+    quotaExceeded: "Max files size is 70mb",
+  },
 };

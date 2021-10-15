@@ -1,0 +1,4 @@
+{
+    "bespoke-patches-server/**/*.{js,jsx,ts,tsx}": "cd bespoke-patches-server && eslint --fix",
+    "bespoke-patches-client/**/*.{js,jsx,ts,tsx}": "cd bespoke-patches-client && eslint --fix"
+}

@@ -12,6 +12,7 @@ import useData, { DataContext } from "./hooks/useData";
 import initLocales from "./i18n";
 import Home from "./pages/Home";
 import Patch from "./pages/Patch";
+import Upload from "./pages/Upload";
 import myTheme from "./theme/fluenceTheme";
 
 initializeIcons();
@@ -34,6 +35,7 @@ const Inner: React.FC = () => {
             <Route exact path="/" component={Home} />
             <Route path="/search/:searchState" component={Home} />
             <Route path="/patch/:id" component={Patch} />
+            <Route path="/upload" component={Upload} />
             <Route
               path="*"
               render={() => (

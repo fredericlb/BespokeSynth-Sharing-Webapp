@@ -1,5 +1,11 @@
 import { mergeStyleSets } from "@fluentui/merge-styles";
-import { ComboBox, PrimaryButton, Stack, TextField } from "@fluentui/react";
+import {
+  ComboBox,
+  DefaultButton,
+  PrimaryButton,
+  Stack,
+  TextField,
+} from "@fluentui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
@@ -75,11 +81,16 @@ const Header: React.FC = () => {
         verticalAlign="center"
         horizontalAlign="space-between"
       >
-        <div role="button" onClick={() => h.push("/")}>
-          <h1 className={$.brand}>
-            bespoke<span className={$.subBrand}>/community</span>
-          </h1>
-        </div>
+        <Stack horizontal gap={16}>
+          <div role="button" onClick={() => h.push("/")}>
+            <h1 className={$.brand}>
+              bespoke<span className={$.subBrand}>/community</span>
+            </h1>
+          </div>
+          <DefaultButton onClick={() => h.push("/upload")}>
+            {t("Upload.button")}
+          </DefaultButton>
+        </Stack>
         <form
           onSubmit={(e) => {
             e.preventDefault();
