@@ -19,7 +19,6 @@ export class UploadPatchInput {
     mail: string;
     tags: string[];
     summary: string;
-    files: Upload[];
     description?: Nullable<string>;
 }
 
