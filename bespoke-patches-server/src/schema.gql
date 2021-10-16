@@ -9,15 +9,20 @@ type Patch {
   mail: String!
   tags: [String!]!
   bskFile: String!
-  coverImage: String!
+  coverImage: String
   audioSamples: [String!]!
   summary: String!
   description: String
-  status: Int!
+  status: PatchStatus!
   revision: Int!
-  publish: DateTime!
+  publicationDate: DateTime!
   modules: String!
   _token: String
+}
+
+enum PatchStatus {
+  WAITING_FOR_APPROVAL
+  APPROVED
 }
 
 """
@@ -27,6 +32,7 @@ scalar DateTime
 
 type Query {
   patch(uuid: String!): Patch!
+  patches(search: String = null, tags: [String!] = []): [Patch!]!
 }
 
 type Mutation {
