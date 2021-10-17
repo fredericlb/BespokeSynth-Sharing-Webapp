@@ -30,13 +30,23 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type ActionToken {
+  uuid: String!
+  token: String!
+  enabled: Boolean!
+  expirationDate: DateTime!
+}
+
 type Query {
   patch(uuid: String!): Patch!
   patches(search: String = null, tags: [String!] = []): [Patch!]!
+  checkActionToken(uuid: String!): ActionToken!
+  enableToken(uuid: String!): ActionToken!
 }
 
 type Mutation {
   uploadPatch(uploadInfo: UploadPatchInput!): String!
+  createActionToken: String!
 }
 
 input UploadPatchInput {

@@ -2,3 +2,4 @@ node_modules/
 bespoke-patches-client/build
 storage/
 bespoke-patches-server/dist
+bespoke-patches-server/.env

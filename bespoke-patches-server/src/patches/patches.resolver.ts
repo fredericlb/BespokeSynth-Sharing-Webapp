@@ -1,11 +1,15 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { ActionTokenService } from 'src/action-token/action-token.service';
 import { Patch } from './patch.model';
 import { PatchesService } from './patches.service';
 import { UploadPatchInput } from './upload-patch.input';
 
 @Resolver()
 export class PatchesResolver {
-  constructor(private service: PatchesService) {}
+  constructor(
+    private service: PatchesService,
+    private actionTokenService: ActionTokenService,
+  ) {}
 
   @Query(() => Patch)
   async patch(@Args('uuid') uuid: string) {
@@ -25,7 +29,13 @@ export class PatchesResolver {
   async uploadPatch(
     @Args('uploadInfo')
     uploadInfo: UploadPatchInput,
+    @Args('tokenUuid')
+    tokenUuid: string,
   ) {
+    if (!(await this.actionTokenService.get(tokenUuid)).enabled) {
+      throw new Error('Token not enabled');
+    }
+
     const patchToSave = new Patch();
     patchToSave.title = uploadInfo.title;
     patchToSave.author = uploadInfo.author;
@@ -41,6 +51,7 @@ export class PatchesResolver {
 
     const patch = await this.service.save(patchToSave);
 
+    this.actionTokenService.deleteToken(tokenUuid);
     return patch.uuid;
   }
 }
