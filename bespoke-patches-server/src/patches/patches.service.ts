@@ -17,7 +17,23 @@ export class PatchesService {
   }
 
   public async find(tags: string[], search: string | null): Promise<Patch[]> {
-    const builder = this.repository.createQueryBuilder('patches');
+    const builder = this.repository.createQueryBuilder('p');
+
+    if (search && search.length > 0) {
+      const s = `%${search.toLowerCase()}%`;
+      builder
+        .where('LOWER(p_title) like :s', { s })
+        .orWhere('LOWER(p_author) like :s', { s })
+        .orWhere('LOWER(p_summary) like :s', { s });
+    }
+
+    // FIXME Own table for tags, this is ugly
+    if (tags.length > 0) {
+      builder.where("',' || tags || ',' like :tags", {
+        tags: `%,${tags.sort().join(',')},%`,
+      });
+    }
+
     const patches = await builder.getMany();
 
     return patches;
@@ -27,6 +43,7 @@ export class PatchesService {
     const patch = patchToSave;
     patch.uuid = uuidv4();
     patch.publicationDate = new Date();
+    patch.tags = patch.tags.map((t) => t.toLowerCase()).sort();
     patch._token = uuidv4();
 
     const queryRunner = this.connection.createQueryRunner();
