@@ -8,6 +8,8 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { GraphQLUpload } from 'graphql-upload';
+
 @InputType()
 export class UploadPatchInput {
   @MinLength(3)
@@ -41,4 +43,7 @@ export class UploadPatchInput {
   @IsOptional()
   @Field(() => String, { nullable: true })
   description?: string;
+
+  @Field(() => [GraphQLUpload])
+  files: [GraphQLUpload];
 }

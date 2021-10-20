@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ import { ActionTokenService } from './action-token/action-token.service';
 import { MailModule } from './mail/mail.module';
 import { ActionToken } from './action-token/action-token.model';
 import { ConfigModule } from '@nestjs/config';
+import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
 
 const entities = [Patch, ActionToken];
 @Module({
@@ -32,6 +33,7 @@ const entities = [Patch, ActionToken];
       subscriptions: {
         'graphql-ws': true,
       },
+      resolvers: { Upload: GraphQLUpload },
     } as GqlModuleOptions),
     TypeOrmModule.forFeature(entities),
     MailModule,
@@ -45,4 +47,10 @@ const entities = [Patch, ActionToken];
     ActionTokenService,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(graphqlUploadExpress({ maxFileSize: 1e8, maxFiles: 20 }))
+      .forRoutes('graphql');
+  }
+}
