@@ -11,19 +11,27 @@ import { ActionTokenResolver } from './action-token/action-token.resolver';
 import { ActionTokenService } from './action-token/action-token.service';
 import { MailModule } from './mail/mail.module';
 import { ActionToken } from './action-token/action-token.model';
+import { ConfigModule } from '@nestjs/config';
 
 const entities = [Patch, ActionToken];
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRoot({
       name: 'default',
       type: 'sqlite',
       database: '../storage/data.sq3',
       entities,
       synchronize: true,
+      logging: true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      subscriptions: {
+        'graphql-ws': true,
+      },
     } as GqlModuleOptions),
     TypeOrmModule.forFeature(entities),
     MailModule,

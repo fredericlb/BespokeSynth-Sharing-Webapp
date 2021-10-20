@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { Patch } from './patch.model';
+import { Patch, PatchStatus } from './patch.model';
 import { v4 as uuidv4 } from 'uuid';
+import { StringMappingType } from '@ts-morph/common/lib/typescript';
 
 @Injectable()
 export class PatchesService {
@@ -12,31 +13,66 @@ export class PatchesService {
     private connection: Connection,
   ) {}
 
-  public findByUuid(uuid: string): Patch | null {
-    return null;
-  }
-
   public async find(tags: string[], search: string | null): Promise<Patch[]> {
-    const builder = this.repository.createQueryBuilder('p');
+    console.log('iciii');
+    const builder = this.repository
+      .createQueryBuilder('p')
+      .where('p_status = :status', { status: PatchStatus.APPROVED });
 
     if (search && search.length > 0) {
       const s = `%${search.toLowerCase()}%`;
-      builder
-        .where('LOWER(p_title) like :s', { s })
-        .orWhere('LOWER(p_author) like :s', { s })
-        .orWhere('LOWER(p_summary) like :s', { s });
+      builder.andWhere(
+        'LOWER(p_title) like :s OR LOWER(p_author) like :s OR LOWER(p_summary) like :s',
+        { s },
+      );
     }
 
     // FIXME Own table for tags, this is ugly
     if (tags.length > 0) {
-      builder.where("',' || tags || ',' like :tags", {
+      builder.andWhere("',' || tags || ',' like :tags", {
         tags: `%,${tags.sort().join(',')},%`,
       });
     }
 
-    const patches = await builder.getMany();
+    const patches = await builder.printSql().getMany();
 
     return patches;
+  }
+
+  public async get(uuid: string, token: string | null): Promise<Patch> {
+    const builder = this.repository.createQueryBuilder('p');
+
+    builder.where('uuid = :uuid AND status = :status', {
+      uuid,
+      status: PatchStatus.APPROVED,
+    });
+
+    if (token != null) {
+      builder.orWhere('_token = :token', { token });
+    }
+
+    return builder.getOneOrFail();
+  }
+
+  public async moderate(
+    uuid: string,
+    token: string,
+    approved: boolean,
+  ): Promise<Patch> {
+    const patch = await this.get(uuid, token);
+
+    if (patch.status === PatchStatus.APPROVED) {
+      throw new Error('Patch already approved');
+    }
+    if (approved) {
+      patch.status = PatchStatus.APPROVED;
+
+      await this.repository.save(patch);
+    } else {
+      await this.repository.remove(patch);
+    }
+
+    return patch;
   }
 
   public async save(patchToSave: Patch): Promise<Patch> {

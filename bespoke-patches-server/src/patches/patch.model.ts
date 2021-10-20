@@ -1,4 +1,10 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  Field,
+  Int,
+  ObjectType,
+  OmitType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 export enum PatchStatus {
@@ -75,3 +81,10 @@ export class Patch {
   @Column({ nullable: true })
   _token?: string;
 }
+
+@ObjectType()
+export class PatchOutput extends OmitType(Patch, [
+  '_token',
+  'mail',
+  'status',
+] as const) {}

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { ActionToken } from './action-token.model';
 import { v4 as uuidv4 } from 'uuid';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,7 +15,7 @@ export class ActionTokenService {
     return (
       await this.repository.findOneOrFail({
         uuid,
-        expirationDate: LessThanOrEqual(new Date()),
+        expirationDate: MoreThanOrEqual(new Date()),
       })
     ).enabled;
   }
@@ -23,7 +23,7 @@ export class ActionTokenService {
   public async get(uuid: string): Promise<ActionToken> {
     return await this.repository.findOneOrFail({
       uuid,
-      expirationDate: LessThanOrEqual(new Date()),
+      expirationDate: MoreThanOrEqual(new Date()),
     });
   }
 
@@ -31,7 +31,7 @@ export class ActionTokenService {
     const actionToken = await this.repository.findOneOrFail({
       token,
       uuid,
-      expirationDate: LessThanOrEqual(new Date()),
+      expirationDate: MoreThanOrEqual(new Date()),
     });
 
     if (actionToken.enabled) {
@@ -46,14 +46,13 @@ export class ActionTokenService {
   }
 
   public async deleteToken(uuid: string): Promise<void> {
-    const actionToken = await this.repository.findOneOrFail({
+    const actionToken = await this.repository.findOne({
       uuid,
     });
-
-    this.repository.delete(actionToken);
+    await this.repository.remove(actionToken);
   }
 
-  public async createAndSendMail(): Promise<ActionToken> {
+  public async create(): Promise<ActionToken> {
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 2);
     const actionToken = new ActionToken();
