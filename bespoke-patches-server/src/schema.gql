@@ -36,10 +36,13 @@ type Query {
 
 type Mutation {
   moderatePatch(approved: Boolean!, token: String, uuid: String!): PatchOutput!
-  uploadPatch(tokenUuid: String!, uploadInfo: UploadPatchInput!): String!
+  uploadPatch(files: [Upload!]!, tokenUuid: String!, uploadInfo: UploadPatchInput!): String!
   createActionToken(mail: String!): ActionTokenOutput!
   enableToken(token: String!, uuid: String!): ActionTokenOutput!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 input UploadPatchInput {
   title: String!
@@ -48,11 +51,7 @@ input UploadPatchInput {
   tags: [String!]!
   summary: String!
   description: String
-  files: [Upload!]!
 }
-
-"""The `Upload` scalar type represents a file upload."""
-scalar Upload
 
 type Subscription {
   actionTokenEnabled(uuid: String!): ActionTokenOutput!

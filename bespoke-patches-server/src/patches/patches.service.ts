@@ -14,7 +14,6 @@ export class PatchesService {
   ) {}
 
   public async find(tags: string[], search: string | null): Promise<Patch[]> {
-    console.log('iciii');
     const builder = this.repository
       .createQueryBuilder('p')
       .where('p_status = :status', { status: PatchStatus.APPROVED });
@@ -77,7 +76,6 @@ export class PatchesService {
 
   public async save(patchToSave: Patch): Promise<Patch> {
     const patch = patchToSave;
-    patch.uuid = uuidv4();
     patch.publicationDate = new Date();
     patch.tags = patch.tags.map((t) => t.toLowerCase()).sort();
     patch._token = uuidv4();

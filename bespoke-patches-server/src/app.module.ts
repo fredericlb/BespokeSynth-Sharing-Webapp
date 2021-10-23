@@ -50,7 +50,9 @@ const entities = [Patch, ActionToken];
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(graphqlUploadExpress({ maxFileSize: 1e8, maxFiles: 20 }))
+      .apply(
+        graphqlUploadExpress({ maxFileSize: 80 * 1024 * 1024, maxFiles: 20 }),
+      )
       .forRoutes('graphql');
   }
 }

@@ -43,7 +43,4 @@ export class UploadPatchInput {
   @IsOptional()
   @Field(() => String, { nullable: true })
   description?: string;
-
-  @Field(() => [GraphQLUpload])
-  files: [GraphQLUpload];
 }
