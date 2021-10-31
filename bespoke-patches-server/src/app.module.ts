@@ -11,7 +11,7 @@ import { ActionTokenResolver } from './action-token/action-token.resolver';
 import { ActionTokenService } from './action-token/action-token.service';
 import { MailModule } from './mail/mail.module';
 import { ActionToken } from './action-token/action-token.model';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
 
 const entities = [Patch, ActionToken];

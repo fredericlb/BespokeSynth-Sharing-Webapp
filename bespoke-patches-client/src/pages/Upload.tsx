@@ -1,11 +1,55 @@
+import { useMutation, gql, useQuery } from "@apollo/client";
 import { mergeStyleSets } from "@fluentui/merge-styles";
 import { PrimaryButton, ProgressIndicator, Stack } from "@fluentui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Control, FieldValues, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Attachments from "../components/Attachments";
 import ControlledTextField from "../components/ControlledTextField";
 import SectionTitle from "../components/Typography";
+
+const createActionTokenGQL = gql`
+  mutation ($mail: String!) {
+    createActionToken(mail: $mail) {
+      uuid
+    }
+  }
+`;
+
+const checkTokenGQL = gql`
+  query ($uuid: String!) {
+    checkActionToken(uuid: $uuid) {
+      uuid
+      enabled
+    }
+  }
+`;
+
+const uploadPatchGQL = gql`
+  mutation (
+    $files: [Upload!]!
+    $tokenUuid: String!
+    $title: String!
+    $author: String!
+    $mail: String!
+    $tags: [String!]!
+    $summary: String!
+    $description: String
+  ) {
+    uploadPatch(
+      tokenUuid: $tokenUuid
+      uploadInfo: {
+        title: $title
+        author: $author
+        mail: $mail
+        tags: $tags
+        summary: $summary
+        description: $description
+      }
+      files: $files
+    )
+  }
+`;
 
 const $ = mergeStyleSets({
   title: {
@@ -64,12 +108,42 @@ enum Status {
   Finished = 4,
 }
 
+interface UploadInfo {
+  author: string;
+  mail: string;
+  summary: string;
+  tags: string[];
+  title: string;
+  description?: string;
+}
+
+const ValidationTokenCheck: React.FC<{ uuid: string; onComplete: () => void }> =
+  ({ uuid, onComplete }) => {
+    const [fired, setFired] = useState(false);
+    const { data } = useQuery(checkTokenGQL, {
+      variables: { uuid },
+      pollInterval: 1000,
+    });
+    useEffect(() => {
+      if (data?.checkActionToken?.enabled && !fired) {
+        setFired(true);
+        onComplete();
+      }
+    }, [data, fired, onComplete]);
+
+    return null;
+  };
+
 const Upload: React.FC = () => {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const [hasAttachmentsError, setAttachmentsError] = useState(false);
   const [status, setStatus] = useState(Status.NotSent);
-
+  const [createActionToken, catInfos] = useMutation(createActionTokenGQL);
+  const [uploadPatch, upInfos] = useMutation(uploadPatchGQL);
+  const [emailTokenUuid, setEmailTokenUuid] = useState<string>();
+  const [uploadRequestSent, setUploadRequestSent] = useState(false);
+  const [uploadInfo, setUploadInfo] = useState<UploadInfo>();
   const { handleSubmit, control } = useForm<Form>({
     defaultValues: {
       title: "",
@@ -79,15 +153,70 @@ const Upload: React.FC = () => {
   });
 
   const ctrl = control as Control<FieldValues, object>;  /* eslint-disable-line */
-  const onSubmit = (data: unknown) => {
+  const onSubmit = (data: Record<string, string>) => {
+    const info = {
+      ...data,
+      tags: data.tags.split(",").map((x) => x.trim()),
+    } as UploadInfo;
+    setUploadInfo(info);
     if (files.length === 0 || hasAttachmentsError) {
       setStatus(Status.NotSent);
       return;
     }
+    setEmailTokenUuid(undefined);
+    createActionToken({
+      variables: {
+        mail: info.mail,
+      },
+    });
     setStatus(Status.WaitingForMail);
-    setTimeout(() => setStatus(Status.SendingPatch), 5000);
-    setTimeout(() => setStatus(Status.Finished), 15000);
+    /* setTimeout(() => setStatus(Status.SendingPatch), 5000);
+    setTimeout(() => setStatus(Status.Finished), 15000); */
   };
+
+  useEffect(() => {
+    if (catInfos.error) {
+      setStatus(Status.Error);
+      // eslint-disable-next-line no-console
+      console.error(catInfos.error);
+    }
+  }, [catInfos.error]);
+
+  useEffect(() => {
+    if (!emailTokenUuid && catInfos.data) {
+      setEmailTokenUuid(catInfos.data.createActionToken?.uuid);
+    }
+  }, [catInfos.data, emailTokenUuid]);
+
+  useEffect(() => {
+    if (status === Status.SendingPatch && !uploadRequestSent) {
+      setUploadRequestSent(true);
+      uploadPatch({
+        variables: {
+          tokenUuid: emailTokenUuid,
+          ...uploadInfo,
+          files,
+        },
+      });
+    }
+  }, [
+    emailTokenUuid,
+    files,
+    status,
+    uploadInfo,
+    uploadPatch,
+    uploadRequestSent,
+  ]);
+
+  useEffect(() => {
+    if (upInfos.error) {
+      setStatus(Status.Error);
+      // eslint-disable-next-line no-console
+      console.error(upInfos.error);
+    } else if (upInfos.data?.uploadPatch != null) {
+      setStatus(Status.Finished);
+    }
+  }, [upInfos]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -173,6 +302,12 @@ const Upload: React.FC = () => {
           )}
         </Stack>
       </Stack>
+      {status === Status.WaitingForMail && emailTokenUuid && (
+        <ValidationTokenCheck
+          uuid={emailTokenUuid}
+          onComplete={() => setStatus(Status.SendingPatch)}
+        />
+      )}
     </form>
   );
 };

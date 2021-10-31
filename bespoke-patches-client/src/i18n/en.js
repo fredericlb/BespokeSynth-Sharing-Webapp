@@ -97,4 +97,10 @@ export default {
     imageSize: "Max image size is 1mb",
     quotaExceeded: "Max files size is 70mb",
   },
+
+  TokenValidation: {
+    missing: "Missing validation token",
+    error: "Token validation failed",
+    success: "Your token has been validated, patch upload should start soon",
+  },
 };

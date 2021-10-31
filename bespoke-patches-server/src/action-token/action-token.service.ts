@@ -34,10 +34,6 @@ export class ActionTokenService {
       expirationDate: MoreThanOrEqual(new Date()),
     });
 
-    if (actionToken.enabled) {
-      return null;
-    }
-
     actionToken.enabled = true;
 
     await this.repository.save(actionToken);

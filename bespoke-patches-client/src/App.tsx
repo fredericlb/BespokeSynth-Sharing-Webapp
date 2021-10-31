@@ -12,6 +12,7 @@ import useData, { DataContext } from "./hooks/useData";
 import initLocales from "./i18n";
 import Home from "./pages/Home";
 import Patch from "./pages/Patch";
+import TokenActivation from "./pages/TokenActivation";
 import Upload from "./pages/Upload";
 import myTheme from "./theme/fluenceTheme";
 
@@ -36,6 +37,10 @@ const Inner: React.FC = () => {
             <Route path="/search/:searchState" component={Home} />
             <Route path="/patch/:id" component={Patch} />
             <Route path="/upload" component={Upload} />
+            <Route
+              path="/validation/access-token/:uuid"
+              component={TokenActivation}
+            />
             <Route
               path="*"
               render={() => (

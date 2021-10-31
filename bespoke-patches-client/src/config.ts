@@ -1,5 +1,5 @@
 const Config = {
-  basePath: "BespokeSynth-Sharing-Webapp",
+  basePath: null,
   repo: "https://fredericlb.github.io/BespokeSynth-Community-Sharing-Repo/",
 };
 
