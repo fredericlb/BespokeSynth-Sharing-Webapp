@@ -17,6 +17,12 @@ const searchGQL = gql`
   }
 `;
 
+const tagsGQL = gql`
+  query {
+    tags
+  }
+`;
+
 export interface IUseData {
   isLoaded: boolean;
   isError: boolean;
@@ -53,19 +59,19 @@ const useData = (): IUseData => {
     variables: { search, tags: selectedTags },
   });
 
+  const { data: resultTags } = useQuery(tagsGQL);
+
   const filteredPatchList = useMemo(
     () => (data?.patches ? (data.patches as PatchSummary[]) : []),
     [data]
   );
 
-  const tags = useMemo(
-    () =>
-      Object.values(filteredPatchList).reduce((set, patch) => {
-        patch.tags.forEach((tag) => set.add(tag));
-        return set;
-      }, new Set<string>()),
-    [filteredPatchList]
-  );
+  const tags = useMemo(() => {
+    if (resultTags && resultTags.tags) {
+      return new Set<string>(resultTags.tags);
+    }
+    return new Set<string>();
+  }, [resultTags]);
 
   return {
     isLoaded: !loading,

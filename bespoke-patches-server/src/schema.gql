@@ -29,6 +29,7 @@ type ActionTokenOutput {
 }
 
 type Query {
+  tags: [String!]!
   patch(token: String, uuid: String!): PatchOutput!
   patches(search: String = null, tags: [String!] = []): [PatchOutput!]!
   checkActionToken(uuid: String!): ActionTokenOutput!

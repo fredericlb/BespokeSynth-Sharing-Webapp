@@ -101,6 +101,11 @@ export class PatchesResolver {
     private config: ConfigService,
   ) {}
 
+  @Query(() => [String])
+  async tags() {
+    return this.service.getAllTags();
+  }
+
   @Query(() => PatchOutput)
   async patch(
     @Args('uuid') uuid: string,

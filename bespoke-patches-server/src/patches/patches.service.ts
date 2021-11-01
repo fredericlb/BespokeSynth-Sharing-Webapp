@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 import { Patch, PatchStatus } from './patch.model';
 import { v4 as uuidv4 } from 'uuid';
-import { StringMappingType } from '@ts-morph/common/lib/typescript';
 
 @Injectable()
 export class PatchesService {
@@ -12,6 +11,18 @@ export class PatchesService {
     private repository: Repository<Patch>,
     private connection: Connection,
   ) {}
+
+  // FIXME It's dirty, have to change this one day
+  public async getAllTags(): Promise<string[]> {
+    const builder = this.repository.createQueryBuilder('p');
+    builder.select('tags');
+
+    const pTags = await builder.getRawMany();
+
+    const tags = new Set(pTags.flatMap(({ tags }) => tags.split(',')));
+
+    return Array.from(tags);
+  }
 
   public async find(tags: string[], search: string | null): Promise<Patch[]> {
     const builder = this.repository
