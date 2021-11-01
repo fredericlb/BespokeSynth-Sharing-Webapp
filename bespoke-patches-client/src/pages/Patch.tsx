@@ -202,8 +202,8 @@ const PatchPage: React.FC = () => {
       return;
     }
     const a = document.createElement("a");
-    a.download = "download";
-    a.href = fullPatch.bskFile;
+    a.download = fullPatch.bskFile;
+    a.href = `/files/${fullPatch.uuid}/${fullPatch.bskFile}`;
     a.click();
   }, [fullPatch]);
 
@@ -269,7 +269,11 @@ const PatchPage: React.FC = () => {
               )}
               {fullPatch.audioSamples.length > 0 &&
                 fullPatch.audioSamples.map((as) => (
-                  <AudioItem src={as} key={as} fname={as} />
+                  <AudioItem
+                    src={`/files/${fullPatch.uuid}/${as}`}
+                    key={as}
+                    fname={as}
+                  />
                 ))}
               <ul>
                 <li />

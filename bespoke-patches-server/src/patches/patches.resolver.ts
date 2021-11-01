@@ -15,7 +15,7 @@ const processFiles = async (
   files: Promise<FileUpload>[],
   storagePath: string,
 ) => {
-  const outputFiles: { path: string; type: string }[] = [];
+  const outputFiles: { path: string; type: string; name: string }[] = [];
 
   for (const f of files) {
     const fileInfos = await f;
@@ -50,7 +50,7 @@ const processFiles = async (
         });
     });
 
-    outputFiles.push({ path, type });
+    outputFiles.push({ path, type, name: fileInfos.filename });
   }
 
   return outputFiles;
@@ -172,13 +172,13 @@ export class PatchesResolver {
         throw new Error('No bsk file provided');
       }
 
-      patchToSave.bskFile = bskFile.path;
+      patchToSave.bskFile = bskFile.name;
 
       if (imageFile != null) {
-        patchToSave.coverImage = imageFile.path;
+        patchToSave.coverImage = imageFile.name;
       }
 
-      patchToSave.audioSamples = sounds.map((x) => x.path);
+      patchToSave.audioSamples = sounds.map((x) => x.name);
 
       const bskContent = await bskJsonInfos(
         patchToSave.bskFile,
