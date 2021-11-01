@@ -18,9 +18,16 @@ export interface Module {
   target?: string;
 }
 
+export enum PatchStatus {
+  WAITING_FOR_APPROVAL = "WAITING_FOR_APPROVAL",
+  APPROVED = "APPROVED",
+}
 export interface Patch extends PatchSummary {
   bskFile: string;
   audioSamples: string[];
-  modules: Module[];
+  content: {
+    modules: Module[];
+  };
   description?: string;
+  status: PatchStatus;
 }

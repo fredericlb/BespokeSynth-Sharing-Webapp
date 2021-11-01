@@ -27,7 +27,7 @@ export class MailService {
   }
 
   async sendSubmittedPatch(patch: Patch) {
-    const url = `${this.config.get('URL')}/patches/${patch.uuid}?token=${
+    const url = `${this.config.get('URL')}/patch/${patch.uuid}?token=${
       patch._token
     }`;
 
@@ -52,7 +52,7 @@ export class MailService {
   }
 
   async sendModerationResult(patch: Patch, approved: boolean) {
-    const url = `${this.config.get('URL')}/patches/${patch.uuid}`;
+    const url = `${this.config.get('URL')}/patch/${patch.uuid}`;
 
     await this.mailerService.sendMail({
       to: patch.mail,

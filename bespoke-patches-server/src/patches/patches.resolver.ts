@@ -111,10 +111,11 @@ export class PatchesResolver {
     @Args('uuid') uuid: string,
     @Args('token', { nullable: true }) token: string | null,
   ) {
+    console.log('token', token);
     return this.service.get(uuid, token);
   }
 
-  @Mutation(() => PatchOutput)
+  @Mutation(() => Boolean)
   async moderatePatch(
     @Args('uuid') uuid: string,
     @Args('token', { nullable: true }) token: string | null,
@@ -127,7 +128,7 @@ export class PatchesResolver {
     }
     this.mailService.sendModerationResult(patch, approved);
 
-    return patch;
+    return approved;
   }
 
   @Query(() => [PatchOutput])
@@ -179,11 +180,11 @@ export class PatchesResolver {
 
       patchToSave.audioSamples = sounds.map((x) => x.path);
 
-      const modules = await bskJsonInfos(
+      const bskContent = await bskJsonInfos(
         patchToSave.bskFile,
         this.config.get('PYTHON_EXEC'),
       );
-      patchToSave.modules = JSON.stringify(modules);
+      patchToSave.content = JSON.stringify(bskContent);
     } catch (e) {
       removeFilesIfExists(patchToSave);
       console.error(e);

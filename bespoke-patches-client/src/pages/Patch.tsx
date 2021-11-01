@@ -1,7 +1,19 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { mergeStyleSets } from "@fluentui/merge-styles";
-import { DefaultButton, IconButton, Stack } from "@fluentui/react";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import {
+  ActionButton,
+  DefaultButton,
+  IconButton,
+  PrimaryButton,
+  Stack,
+} from "@fluentui/react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 import { useParams, useHistory } from "react-router-dom";
@@ -12,12 +24,12 @@ import Loader from "../components/Loader";
 import PatchItem from "../components/PatchItem";
 import ScriptsModal from "../components/ScriptsModal";
 import SectionTitle from "../components/Typography";
-import { Patch } from "../hooks/patch.types";
+import { Patch, PatchStatus } from "../hooks/patch.types";
 import { MOBILE } from "../theme/constants";
 
 const patchGQL = gql`
-  query ($id: String!) {
-    patch(uuid: $id) {
+  query ($id: String!, $token: String) {
+    patch(uuid: $id, token: $token) {
       uuid
       tags
       author
@@ -29,11 +41,17 @@ const patchGQL = gql`
       audioSamples
       bskFile
       description
-      modules
+      content
+      status
     }
   }
 `;
 
+const moderatePatchGQL = gql`
+  mutation ($id: String!, $token: String!, $approved: Boolean!) {
+    moderatePatch(uuid: $id, token: $token, approved: $approved)
+  }
+`;
 const AudioItem: React.FC<{ src: string; fname: string }> = ({
   src,
   fname,
@@ -91,21 +109,78 @@ const $ = mergeStyleSets({
       flexDirection: "column",
     },
   },
+  approval: {
+    display: "flex",
+    marginTop: 40,
+    justifyContent: "space-between",
+    background: "#ff750099",
+    alignItems: "center",
+    padding: 10,
+  },
 });
 
 const PatchPage: React.FC = () => {
   const { t } = useTranslation();
-
+  const [
+    moderatePatch,
+    { data: moderatePatchData, error: moderatePatchError },
+  ] = useMutation(moderatePatchGQL);
   const { id } = useParams<{ id: string }>();
-  const { data, loading, error } = useQuery(patchGQL, { variables: { id } });
-  const [showScriptModal, setShowScriptModal] = useState(false);
   const h = useHistory();
+
+  const token = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("token");
+  }, []);
+
+  const { data, loading, error } = useQuery(patchGQL, {
+    variables: { id, token },
+  });
+
+  const approve = useCallback(
+    (approved: boolean) => {
+      // eslint-disable-next-line no-restricted-globals
+      if (!approved && !confirm("Are you sure")) {
+        return;
+      }
+      moderatePatch({
+        variables: {
+          id,
+          token,
+          approved,
+        },
+      });
+    },
+    [id, moderatePatch, token]
+  );
+
+  useEffect(() => {
+    if (moderatePatchError) {
+      // eslint-disable-next-line no-console
+      console.error(moderatePatchError);
+      // eslint-disable-next-line no-alert
+      alert("Patch approval failed");
+    }
+  });
+
+  useEffect(() => {
+    if (moderatePatchData) {
+      if (moderatePatchData.moderatePatch === false) {
+        h.push("/");
+      } else {
+        h.push(`/patch/${id}`);
+        window.location.reload();
+      }
+    }
+  }, [h, id, moderatePatchData]);
+
+  const [showScriptModal, setShowScriptModal] = useState(false);
 
   const fullPatch = useMemo(() => {
     if (data?.patch) {
       return {
         ...data.patch,
-        modules: JSON.parse(data.patch.modules),
+        modules: JSON.parse(data.patch.content),
       } as Patch;
     }
     return null;
@@ -113,9 +188,11 @@ const PatchPage: React.FC = () => {
 
   const scripts: { name: string; content: string }[] = useMemo(() => {
     if (fullPatch) {
-      return fullPatch.modules
-        .filter(({ script }) => script != null)
-        .map((module) => ({ name: module.name, content: module.script! }));
+      return fullPatch.content.modules
+        ? fullPatch.content.modules
+            .filter(({ script }) => script != null)
+            .map((module) => ({ name: module.name, content: module.script! }))
+        : [];
     }
     return [];
   }, [fullPatch]);
@@ -181,7 +258,9 @@ const PatchPage: React.FC = () => {
           <Stack className={$.contentStack}>
             <div className={$.viz}>
               <SectionTitle>{t("Patch.viz")}</SectionTitle>
-              <BSKViz modules={fullPatch.modules} />
+              {fullPatch.content?.modules && (
+                <BSKViz modules={fullPatch.content.modules} />
+              )}
             </div>
             <div className={$.samples}>
               <SectionTitle>{t("Patch.audio_samples")}</SectionTitle>
@@ -206,6 +285,16 @@ const PatchPage: React.FC = () => {
               <ReactMarkdown>{fullPatch.description || ""}</ReactMarkdown>
             </div>
           )}
+        </div>
+      )}
+
+      {token && fullPatch.status === PatchStatus.WAITING_FOR_APPROVAL && (
+        <div className={$.approval}>
+          <div>Patch moderation</div>
+          <div>
+            <ActionButton onClick={() => approve(false)}>Delete</ActionButton>
+            <PrimaryButton onClick={() => approve(true)}>Approve</PrimaryButton>
+          </div>
         </div>
       )}
     </div>

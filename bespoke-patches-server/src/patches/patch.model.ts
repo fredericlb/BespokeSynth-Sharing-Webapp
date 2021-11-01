@@ -77,7 +77,7 @@ export class Patch {
 
   @Field(() => String)
   @Column({ default: '[]' })
-  modules: string;
+  content: string;
 
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })
@@ -85,8 +85,4 @@ export class Patch {
 }
 
 @ObjectType()
-export class PatchOutput extends OmitType(Patch, [
-  '_token',
-  'mail',
-  'status',
-] as const) {}
+export class PatchOutput extends OmitType(Patch, ['_token', 'mail'] as const) {}

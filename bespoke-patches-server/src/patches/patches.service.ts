@@ -60,13 +60,16 @@ export class PatchesService {
   public async get(uuid: string, token: string | null): Promise<Patch> {
     const builder = this.repository.createQueryBuilder('p');
 
-    builder.where('uuid = :uuid AND status = :status', {
-      uuid,
-      status: PatchStatus.APPROVED,
-    });
-
     if (token != null) {
-      builder.orWhere('_token = :token', { token });
+      builder.where('uuid = :uuid AND _token = :token', {
+        uuid,
+        token,
+      });
+    } else {
+      builder.where('uuid = :uuid AND status = :status', {
+        uuid,
+        status: PatchStatus.APPROVED,
+      });
     }
 
     const p = await builder.getOneOrFail();

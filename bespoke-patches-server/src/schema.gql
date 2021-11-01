@@ -12,9 +12,15 @@ type PatchOutput {
   audioSamples: [String!]!
   summary: String!
   description: String
+  status: PatchStatus!
   revision: Int!
   publicationDate: DateTime!
-  modules: String!
+  content: String!
+}
+
+enum PatchStatus {
+  WAITING_FOR_APPROVAL
+  APPROVED
 }
 
 """
@@ -36,7 +42,7 @@ type Query {
 }
 
 type Mutation {
-  moderatePatch(approved: Boolean!, token: String, uuid: String!): PatchOutput!
+  moderatePatch(approved: Boolean!, token: String, uuid: String!): Boolean!
   uploadPatch(files: [Upload!]!, tokenUuid: String!, uploadInfo: UploadPatchInput!): String!
   createActionToken(mail: String!): ActionTokenOutput!
   enableToken(token: String!, uuid: String!): ActionTokenOutput!
