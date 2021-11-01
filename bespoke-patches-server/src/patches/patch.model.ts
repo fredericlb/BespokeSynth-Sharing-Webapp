@@ -72,9 +72,11 @@ export class Patch {
   revision: number;
 
   @Field(() => Date)
+  @Column({ default: () => 'CURRENT_TIMESTAMP' })
   publicationDate: Date;
 
   @Field(() => String)
+  @Column({ default: '[]' })
   modules: string;
 
   @Field(() => String, { nullable: true })

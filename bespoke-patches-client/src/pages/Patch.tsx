@@ -1,14 +1,9 @@
+import { gql, useQuery } from "@apollo/client";
 import { mergeStyleSets } from "@fluentui/merge-styles";
 import { DefaultButton, IconButton, Stack } from "@fluentui/react";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
 import { useParams, useHistory } from "react-router-dom";
 import BSKViz from "../components/BSKViz";
 import DocumentTitle from "../components/DocumentTitle";
@@ -18,8 +13,26 @@ import PatchItem from "../components/PatchItem";
 import ScriptsModal from "../components/ScriptsModal";
 import SectionTitle from "../components/Typography";
 import { Patch } from "../hooks/patch.types";
-import { DataContext, IUseData } from "../hooks/useData";
 import { MOBILE } from "../theme/constants";
+
+const patchGQL = gql`
+  query ($id: String!) {
+    patch(uuid: $id) {
+      uuid
+      tags
+      author
+      summary
+      title
+      publicationDate
+      coverImage
+      revision
+      audioSamples
+      bskFile
+      description
+      modules
+    }
+  }
+`;
 
 const AudioItem: React.FC<{ src: string; fname: string }> = ({
   src,
@@ -84,26 +97,28 @@ const PatchPage: React.FC = () => {
   const { t } = useTranslation();
 
   const { id } = useParams<{ id: string }>();
-  const { patches, getPatchInfo } = useContext(DataContext) as IUseData;
+  const { data, loading, error } = useQuery(patchGQL, { variables: { id } });
   const [showScriptModal, setShowScriptModal] = useState(false);
-  const [fullPatch, setFullPatch] = useState<Patch | null>();
   const h = useHistory();
+
+  const fullPatch = useMemo(() => {
+    if (data?.patch) {
+      return {
+        ...data.patch,
+        modules: JSON.parse(data.patch.modules),
+      } as Patch;
+    }
+    return null;
+  }, [data]);
 
   const scripts: { name: string; content: string }[] = useMemo(() => {
     if (fullPatch) {
-      return fullPatch.bsk_content.modules
+      return fullPatch.modules
         .filter(({ script }) => script != null)
         .map((module) => ({ name: module.name, content: module.script! }));
     }
     return [];
   }, [fullPatch]);
-
-  useEffect(() => {
-    const f = async () => {
-      setFullPatch(await getPatchInfo(`${id}`));
-    };
-    f();
-  }, [getPatchInfo, id]);
 
   const download = useCallback(() => {
     if (!fullPatch) {
@@ -111,9 +126,17 @@ const PatchPage: React.FC = () => {
     }
     const a = document.createElement("a");
     a.download = "download";
-    a.href = fullPatch.bsk_download;
+    a.href = fullPatch.bskFile;
     a.click();
   }, [fullPatch]);
+
+  if (error) {
+    return <Error />;
+  }
+
+  if (!fullPatch || loading) {
+    return <Loader full />;
+  }
 
   return (
     <div>
@@ -142,9 +165,9 @@ const PatchPage: React.FC = () => {
 
       <PatchItem
         isList={false}
-        patch={patches[id]}
+        patch={fullPatch}
         onDownload={() =>
-          fullPatch && fullPatch.scripts.length > 0
+          fullPatch && scripts.length > 0
             ? setShowScriptModal(true)
             : download()
         }
@@ -158,15 +181,15 @@ const PatchPage: React.FC = () => {
           <Stack className={$.contentStack}>
             <div className={$.viz}>
               <SectionTitle>{t("Patch.viz")}</SectionTitle>
-              <BSKViz modules={fullPatch.bsk_content.modules} />
+              <BSKViz modules={fullPatch.modules} />
             </div>
             <div className={$.samples}>
               <SectionTitle>{t("Patch.audio_samples")}</SectionTitle>
-              {fullPatch.audio_samples.length === 0 && (
+              {fullPatch.audioSamples.length === 0 && (
                 <div>{t("Patch.no_audio_samples")}</div>
               )}
-              {fullPatch.audio_samples.length > 0 &&
-                fullPatch.audio_samples.map((as) => (
+              {fullPatch.audioSamples.length > 0 &&
+                fullPatch.audioSamples.map((as) => (
                   <AudioItem src={as} key={as} fname={as} />
                 ))}
               <ul>
@@ -176,13 +199,12 @@ const PatchPage: React.FC = () => {
           </Stack>
 
           <SectionTitle>{t("Patch.description")}</SectionTitle>
-          {fullPatch.html.trim().length === 0 ? (
+          {(fullPatch.description || "").trim().length === 0 ? (
             <div className="mdContent">{t("Patch.no_description")}</div>
           ) : (
-            <div
-              className="mdContent"
-              dangerouslySetInnerHTML={{ __html: fullPatch.html }}
-            />
+            <div className="mdContent">
+              <ReactMarkdown>{fullPatch.description || ""}</ReactMarkdown>
+            </div>
           )}
         </div>
       )}

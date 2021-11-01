@@ -33,7 +33,15 @@ export class PatchesService {
       });
     }
 
-    const patches = await builder.printSql().getMany();
+    const patches = await builder.getMany();
+
+    patches.forEach((p) => {
+      if ((p.tags as unknown as string).length > 0) {
+        p.tags = (p.tags as unknown as string).split(',');
+      } else {
+        p.tags = [];
+      }
+    });
 
     return patches;
   }
@@ -50,7 +58,21 @@ export class PatchesService {
       builder.orWhere('_token = :token', { token });
     }
 
-    return builder.getOneOrFail();
+    const p = await builder.getOneOrFail();
+
+    if ((p.tags as unknown as string).length > 0) {
+      p.tags = (p.tags as unknown as string).split(',');
+    } else {
+      p.tags = [];
+    }
+
+    if ((p.audioSamples as unknown as string).length > 0) {
+      p.audioSamples = (p.audioSamples as unknown as string).split(',');
+    } else {
+      p.audioSamples = [];
+    }
+
+    return p;
   }
 
   public async moderate(

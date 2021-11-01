@@ -105,14 +105,14 @@ const PatchItem: React.FC<{
     <div className={$.root}>
       <div
         role="button"
-        onClick={() => !onDownload && h.push(`/patch/${patch.id}`)}
+        onClick={() => !onDownload && h.push(`/patch/${patch.uuid}`)}
         className={`${$.title} ${isList && $.titleInList}`}
       >
         <Highlighter
           highlightClassName="highlight"
           searchWords={[search]}
           autoEscape
-          textToHighlight={patch.title[0]}
+          textToHighlight={patch.title}
         />
       </div>
       <Stack
@@ -124,17 +124,17 @@ const PatchItem: React.FC<{
           <div className={$.subpatch}>
             <div>
               <span className={$.subpatchTitle}>{t("PatchItem.author")}:</span>{" "}
-              {patch.author[0]}{" "}
+              {patch.author}{" "}
             </div>
             <div className={$.separator}>
               <span className={$.subpatchTitle}>{t("PatchItem.date")}: </span>{" "}
-              {new Date(patch.publish).toLocaleString("en-US")}
+              {new Date(patch.publicationDate).toLocaleString("en-US")}
             </div>
             <div className={$.separator}>
               <span className={$.subpatchTitle}>
                 {t("PatchItem.revision")}:{" "}
               </span>{" "}
-              {patch.version[0]}
+              {patch.revision}
             </div>
           </div>
           <div className={$.tags}>
@@ -156,7 +156,7 @@ const PatchItem: React.FC<{
             <Highlighter
               searchWords={[search]}
               autoEscape
-              textToHighlight={patch.summary[0]}
+              textToHighlight={patch.summary}
             />
           </p>
         </div>

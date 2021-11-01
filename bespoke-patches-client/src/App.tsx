@@ -1,13 +1,12 @@
 import { ThemeProvider } from "@fluentui/react";
 import { initializeIcons } from "@uifabric/icons";
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Error from "./components/Error";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Loader from "./components/Loader";
 import Section from "./components/Section";
-import Config from "./config";
 import useData, { DataContext } from "./hooks/useData";
 import initLocales from "./i18n";
 import Home from "./pages/Home";
@@ -21,9 +20,7 @@ initializeIcons();
 initLocales();
 
 const Inner: React.FC = () => {
-  const { load, ...dataAPI } = useData();
-
-  useEffect(() => load(), [load]);
+  const { ...dataAPI } = useData();
 
   return (
     <DataContext.Provider value={dataAPI}>
@@ -59,7 +56,7 @@ const Inner: React.FC = () => {
 
 const App: React.FC = () => (
   <ThemeProvider applyTo="body" theme={myTheme}>
-    <Router basename={Config.basePath}>
+    <Router>
       <Inner />
     </Router>
   </ThemeProvider>

@@ -27,7 +27,7 @@ const PatchList: React.FC = () => {
       {filteredPatchList.length === 0 && <div>{t("PatchList.no_patches")}</div>}
       <div className={$.list}>
         {filteredPatchList.map((p) => (
-          <PatchItem patch={p} key={p.id} isList />
+          <PatchItem patch={p} key={p.uuid} isList />
         ))}
       </div>
     </div>
