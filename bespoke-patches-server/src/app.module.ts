@@ -13,6 +13,8 @@ import { MailModule } from './mail/mail.module';
 import { ActionToken } from './action-token/action-token.model';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
+import { ApolloLogPlugin } from 'apollo-log';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 const entities = [Patch, ActionToken];
 @Module({
@@ -26,7 +28,6 @@ const entities = [Patch, ActionToken];
       database: '../storage/data.sq3',
       entities,
       synchronize: true,
-      logging: true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -34,9 +35,26 @@ const entities = [Patch, ActionToken];
         'graphql-ws': true,
       },
       resolvers: { Upload: GraphQLUpload },
+      plugins: [
+        () =>
+          ApolloLogPlugin({
+            events: { willSendResponse: false },
+            timestamp: true,
+            mutate: (data) => {
+              return {
+                query: data.query,
+                variables: data.variables,
+                context: null,
+              };
+            },
+          }),
+      ],
     } as GqlModuleOptions),
     TypeOrmModule.forFeature(entities),
     MailModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public/client'),
+    }),
   ],
   controllers: [AppController],
   providers: [
