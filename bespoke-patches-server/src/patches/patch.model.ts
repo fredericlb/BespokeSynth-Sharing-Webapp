@@ -82,6 +82,14 @@ export class Patch {
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })
   _token?: string;
+
+  getStorageDir(): string {
+    return `../storage/${this.uuid}`;
+  }
+
+  getPath(pathEnd: string): string {
+    return `${this.getStorageDir()}/${pathEnd}`;
+  }
 }
 
 @ObjectType()

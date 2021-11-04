@@ -81,7 +81,7 @@ const removeFilesIfExists = (patch: Patch) => {
   const remove = async (path: string | null) => {
     try {
       if (path != null && path.length > 0) {
-        await unlink(path);
+        await unlink(patch.getPath(path));
       }
     } catch (e) {
       console.debug(e);
@@ -181,7 +181,7 @@ export class PatchesResolver {
       patchToSave.audioSamples = sounds.map((x) => x.name);
 
       const bskContent = await bskJsonInfos(
-        patchToSave.bskFile,
+        bskFile.path,
         this.config.get('PYTHON_EXEC'),
       );
       patchToSave.content = JSON.stringify(bskContent);
