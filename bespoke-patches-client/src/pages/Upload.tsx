@@ -1,9 +1,16 @@
 import { useMutation, gql, useQuery } from "@apollo/client";
 import { mergeStyleSets } from "@fluentui/merge-styles";
-import { PrimaryButton, ProgressIndicator, Stack } from "@fluentui/react";
+import {
+  DefaultButton,
+  PrimaryButton,
+  ProgressIndicator,
+  Stack,
+} from "@fluentui/react";
+import useUmami from "@parcellab/react-use-umami";
 import React, { useEffect, useState } from "react";
 import { Control, FieldValues, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useHistory } from "react-router-dom";
 import Attachments from "../components/Attachments";
 import ControlledTextField from "../components/ControlledTextField";
 import SectionTitle from "../components/Typography";
@@ -39,7 +46,7 @@ const uploadPatchGQL = gql`
     uploadPatch(
       tokenUuid: $tokenUuid
       uploadInfo: {
-        title: $title
+        title: $titleXX
         author: $author
         mail: $mail
         tags: $tags
@@ -52,6 +59,10 @@ const uploadPatchGQL = gql`
 `;
 
 const $ = mergeStyleSets({
+  back: {
+    marginTop: 40,
+    marginBottom: 0,
+  },
   title: {
     fontSize: "1.5rem",
     paddingBottom: 4,
@@ -96,6 +107,9 @@ const isValidEmail = (email: string) =>
   );
 
 const isValidTags = (str: string) => {
+  if (str === "") {
+    return true;
+  }
   const tags = str.split(",");
   return tags.every((s) => s.trim().match(/[a-zA-Z0-9]+/)) && tags.length <= 5;
 };
@@ -135,6 +149,8 @@ const ValidationTokenCheck: React.FC<{ uuid: string; onComplete: () => void }> =
   };
 
 const Upload: React.FC = () => {
+  useUmami(`/upload`);
+
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
   const [hasAttachmentsError, setAttachmentsError] = useState(false);
@@ -143,6 +159,7 @@ const Upload: React.FC = () => {
   const [uploadPatch, upInfos] = useMutation(uploadPatchGQL);
   const [emailTokenUuid, setEmailTokenUuid] = useState<string>();
   const [uploadRequestSent, setUploadRequestSent] = useState(false);
+  const h = useHistory();
   const [uploadInfo, setUploadInfo] = useState<UploadInfo>();
   const { handleSubmit, control } = useForm<Form>({
     defaultValues: {
@@ -163,6 +180,7 @@ const Upload: React.FC = () => {
       setStatus(Status.NotSent);
       return;
     }
+    setUploadRequestSent(false);
     setEmailTokenUuid(undefined);
     createActionToken({
       variables: {
@@ -175,12 +193,12 @@ const Upload: React.FC = () => {
   };
 
   useEffect(() => {
-    if (catInfos.error) {
+    if (catInfos.error && status === Status.WaitingForMail) {
       setStatus(Status.Error);
       // eslint-disable-next-line no-console
       console.error(catInfos.error);
     }
-  }, [catInfos.error]);
+  }, [catInfos.error, status]);
 
   useEffect(() => {
     if (!emailTokenUuid && catInfos.data) {
@@ -209,6 +227,9 @@ const Upload: React.FC = () => {
   ]);
 
   useEffect(() => {
+    if (status !== Status.SendingPatch || !uploadRequestSent) {
+      return;
+    }
     if (upInfos.error) {
       setStatus(Status.Error);
       // eslint-disable-next-line no-console
@@ -216,10 +237,17 @@ const Upload: React.FC = () => {
     } else if (upInfos.data?.uploadPatch != null) {
       setStatus(Status.Finished);
     }
-  }, [upInfos]);
+  }, [upInfos, status, uploadRequestSent]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <DefaultButton
+        onClick={() => h.goBack()}
+        iconProps={{ iconName: "back" }}
+        className={$.back}
+      >
+        {t("Patch.back")}
+      </DefaultButton>
       <Stack>
         <SectionTitle>{t("Upload.name")}</SectionTitle>
         <h3 className={$.title}>{t("Upload.metadata")}</h3>
@@ -295,9 +323,14 @@ const Upload: React.FC = () => {
             <div className={$.finished}>{t("Upload.finished")}</div>
           )}
           {status === Status.Error && (
-            <div className={$.error}>{t("Upload.error")}</div>
+            <>
+              <div className={$.error}>{t("Upload.error")}</div>
+              <PrimaryButton onClick={() => setStatus(Status.NotSent)}>
+                {t("Upload.retry")}
+              </PrimaryButton>
+            </>
           )}
-          {[Status.NotSent, Status.Error].includes(status) && (
+          {[Status.NotSent].includes(status) && (
             <PrimaryButton type="submit">{t("Upload.send")}</PrimaryButton>
           )}
         </Stack>
