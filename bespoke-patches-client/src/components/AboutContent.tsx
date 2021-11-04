@@ -21,11 +21,6 @@ const AboutContent: React.FC<{ short?: boolean }> = ({ short = false }) => {
         className={$.p}
         dangerouslySetInnerHTML={{ __html: t("About.description") }}
       />
-      <SectionTitle>{t("About.upload_title")}</SectionTitle>
-      <p
-        className={$.p}
-        dangerouslySetInnerHTML={{ __html: t("About.upload") }}
-      />
     </div>
   );
 };

@@ -8,7 +8,7 @@ import {
 } from "@fluentui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { DataContext, IUseData } from "../hooks/useData";
 import { MOBILE } from "../theme/constants";
 
@@ -45,13 +45,14 @@ const $ = mergeStyleSets({
     cursor: "pointer",
   },
   subBrand: {
-    content: "/community",
+    content: "/patches",
     opacity: 0.5,
   },
 });
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const { tags, search, selectedTags, setSearchState } = useContext(
     DataContext
   ) as IUseData;
@@ -84,10 +85,19 @@ const Header: React.FC = () => {
         <Stack horizontal gap={16}>
           <div role="button" onClick={() => h.push("/")}>
             <h1 className={$.brand}>
-              bespoke<span className={$.subBrand}>/community</span>
+              bespoke<span className={$.subBrand}>/patches</span>
             </h1>
           </div>
-          <DefaultButton onClick={() => h.push("/upload")}>
+          <DefaultButton
+            onClick={() => h.push("/upload")}
+            style={{
+              position: "relative",
+              top: 1,
+              ...(location.pathname === "/upload"
+                ? { background: "white", color: "#676767" }
+                : {}),
+            }}
+          >
             {t("Upload.button")}
           </DefaultButton>
         </Stack>
