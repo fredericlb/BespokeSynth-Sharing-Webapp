@@ -1,4 +1,5 @@
 import { DefaultButton } from "@fluentui/react";
+import useUmami from "@parcellab/react-use-umami";
 import React, { useContext, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useHistory } from "react-router-dom";
@@ -7,6 +8,7 @@ import PatchList from "../components/PatchList";
 import { DataContext, IUseData } from "../hooks/useData";
 
 const Home: React.FC = () => {
+  useUmami("/");
   const { setSearchState, ...data } = useContext(DataContext) as IUseData;
   const { searchState } = useParams<{ searchState: string }>();
   const h = useHistory();

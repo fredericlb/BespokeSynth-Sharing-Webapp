@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@fluentui/react";
+import { registerUmamiScript } from "@parcellab/react-use-umami";
 import { initializeIcons } from "@uifabric/icons";
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Error from "./components/Error";
 import Footer from "./components/Footer";
@@ -21,6 +22,18 @@ initLocales();
 
 const Inner: React.FC = () => {
   const { ...dataAPI } = useData();
+
+  useEffect(() => {
+    if (
+      import.meta.env.VITE_APP_UMAMI &&
+      localStorage.getItem("disabledMetrics") === null
+    ) {
+      const [url, websiteId, domain] = import.meta.env.VITE_APP_UMAMI.split(
+        ";"
+      );
+      registerUmamiScript(url, websiteId, domain);
+    }
+  }, []);
 
   return (
     <DataContext.Provider value={dataAPI}>

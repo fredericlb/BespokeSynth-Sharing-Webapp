@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { mergeStyleSets } from "@fluentui/merge-styles";
 import { Icon } from "@fluentui/react";
+import useUmami from "@parcellab/react-use-umami";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -38,6 +39,8 @@ const enableTokenGQL = gql`
 
 const TokenActivation: React.FC = () => {
   const { uuid } = useParams<{ uuid: string }>();
+  useUmami(`/validation/access-token/${uuid}`);
+
   const [enableToken, etInfos] = useMutation(enableTokenGQL);
   const [requestSent, setRequestSent] = useState(false);
   const { t } = useTranslation();

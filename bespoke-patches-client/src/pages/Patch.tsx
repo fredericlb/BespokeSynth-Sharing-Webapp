@@ -7,6 +7,7 @@ import {
   PrimaryButton,
   Stack,
 } from "@fluentui/react";
+import useUmami from "@parcellab/react-use-umami";
 import React, {
   useCallback,
   useEffect,
@@ -120,12 +121,13 @@ const $ = mergeStyleSets({
 });
 
 const PatchPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  useUmami(`/patch/${id}`);
   const { t } = useTranslation();
   const [
     moderatePatch,
     { data: moderatePatchData, error: moderatePatchError },
   ] = useMutation(moderatePatchGQL);
-  const { id } = useParams<{ id: string }>();
   const h = useHistory();
 
   const token = useMemo(() => {
@@ -180,7 +182,7 @@ const PatchPage: React.FC = () => {
     if (data?.patch) {
       return {
         ...data.patch,
-        modules: JSON.parse(data.patch.content),
+        content: JSON.parse(data.patch.content),
       } as Patch;
     }
     return null;
