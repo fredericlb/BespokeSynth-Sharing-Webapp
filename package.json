@@ -1,6 +1,6 @@
 {
-  "name": "bespoke-patches-repo",
-  "version": "0.0.1",
+  "name": "bespoke-patches",
+  "version": "0.9.9",
   "dependencies": {
     "eslint": "^7.30.0",
     "@commitlint/cli": "^12.1.4",

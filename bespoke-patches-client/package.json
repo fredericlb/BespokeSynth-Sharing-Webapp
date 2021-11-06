@@ -1,6 +1,6 @@
 {
   "name": "bespoke-sharing-webapp",
-  "version": "0.1.0",
+  "version": "0.9.9",
   "private": true,
   "homepage": ".",
   "main": "./src/index.tsx",
