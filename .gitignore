@@ -4,3 +4,4 @@ storage/
 bespoke-patches-server/dist
 bespoke-patches-server/public/client
 .env
+docker-compose.yml

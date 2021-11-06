@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  bespokepatches:
+    build: .
+    environment:
+      # Add and fill this line only if you use umami
+      VITE_APP_UMAMI: "tracking_url;website_id;host"
+      SMTP_HOST: your_smtp_host
+      SMTP_LOGIN: your_smtp_login
+      SMTP_PASSWORD: your_smtp_password
+      SMTP_FROM: "\"Bespoke Patches\" <from@mail.com>"
+      URL: https://your.url
+      ADMIN: admin@mail.com
+      PYTHON_EXEC: python3
+      STORAGE_DIR: /storage
+    volumes:
+      - bespoke_storage:/storage
+
+    # The following is only for traefik enabled infrastructures
+    networks:
+      - traefik_network
+    labels:
+      - "traefik.enable=true"
+        #- "traefik.http.routers.bespokepatches.rule=Host(`patches.bespoke.parapluie.org`)"
+      - "traefik.http.routers.bespokepatches.rule=Host(`patches.bespoke.parapluie.org`,`patches.bespokesynth.com`)"
+      - "traefik.http.routers.bespokepatches.entrypoints=websecure"
+      - "traefik.http.routers.bespokepatches.tls.certresolver=le"
+      - "traefik.docker.network=traefik_network"
