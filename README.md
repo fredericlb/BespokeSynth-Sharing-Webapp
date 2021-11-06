@@ -1,31 +1,44 @@
-# Description
+# Bespoke/Patches
 
-This project is a frontend to list and download Bespoke patches. It can be used by anyone who would like a place to share its Bespoke patches. It features :
+A webapp to list and download Bespoke patches. It features :
 
 - Search and tag filtering
 - Graph display of the patch content
 - Showing scripts and comment nodes content
+- Patch uploads without user account (using simple mail token validation)
 
-It does not have any user account or database, but it requires a link to a JSON file listing all projects (a script generating it is available). An example is available below. 
+A global instance of this project is available here : [https://patches.bespokesynth.com](https://patches.bespokesynth.com)
+# Configuration
 
-Uploading a patch from the UI is not supported yet and a PR based submission is used on the « official » instance. 
+The project won't run without a valid env file for server. You can set them up in ```bespoke-patches-server/src/.env``` or in the docker-compose file if you're running it through Docker. 
+
+Configuration keys are : 
+
+- ```SMTP_HOST, SMTP_LOGIN, SMTP_PASSWORD```: Required, your mail server credentials
+- ```SMTP_FROM```: Required, sender email for messages sent by the server. Ie : ```"Bespoke Patches" <bespoke@server.com>```
+- ```URL```: Required, url to your Bespoke/Patches instance
+- ```ADMIN```: Required, mail to which draft patches and validation links are sent
+- ```DISABLE_ACTION_TOKEN_CHECK```: Optional, set to true if you'd like to skip server-side mail validation
+- ```PYTHON_EXEC```: Required, path to your Python3 exec (ie. ```python3``` for macos)
+- ```STORAGE_DIR```: Required, path where sqlite database and patches files are stored
+- ```VITE_APP_UMAMI```: Optional, set this for client app if you'd like to collect metrics with UMAMI. Provided string should be ```"tracker_url;website_id;host"```
 
 # Install and run
 
-$ npm install
+## Without docker
+```
+$ sh build.sh
+$ cd bespoke-patches-client && npm start
+$ cd bespoke-patches-server && npm start
+```
 
-$ npm run
+## With docker
 
+- Copy the docker-compose example and set it with your own vars
+- ```$ docker-compose up```
 
-# Configuration
+# Contributing
 
-Configuration is in the `config.ts` file. For now there are two options : 
+Every contributions are welcome. The project uses husky with eslint/prettier/commitlint to maintain consistent coding style, please don't skip the corresponding git hooks. 
 
-- `repo` is the url to the folder containing the manifest.json file
-- `basePath` has no use if you’re serving the webapp from root (in that case set it to empty string), but if you are serving it from a subdomain it should be written here
-
-# JSON files
-
-You can find examples of a running folder published on GitHub pages here : https://github.com/fredericlb/BespokeSynth-Community-Sharing-Repo . 
-
-Scripts for JSON production are also available there. 
+Project roadmap is available here:  [Github project roadmap](https://github.com/fredericlb/BespokeSynth-Sharing-Webapp/projects/1)
