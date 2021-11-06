@@ -46,7 +46,7 @@ const uploadPatchGQL = gql`
     uploadPatch(
       tokenUuid: $tokenUuid
       uploadInfo: {
-        title: $titleXX
+        title: $title
         author: $author
         mail: $mail
         tags: $tags

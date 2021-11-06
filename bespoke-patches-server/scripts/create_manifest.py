@@ -3,7 +3,6 @@ import sys
 import json
 import glob
 import os 
-import markdown
 from datetime import datetime
 
 from pathlib import Path

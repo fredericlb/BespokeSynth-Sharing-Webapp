@@ -84,7 +84,7 @@ export class Patch {
   _token?: string;
 
   getStorageDir(): string {
-    return `../storage/${this.uuid}`;
+    return `${process.env.STORAGE_DIR}/${this.uuid}`;
   }
 
   getPath(pathEnd: string): string {

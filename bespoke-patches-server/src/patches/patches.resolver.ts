@@ -160,7 +160,9 @@ export class PatchesResolver {
     patchToSave.uuid = uuidv4();
 
     try {
-      const storageDir = `../storage/${patchToSave.uuid}`;
+      const storageDir = `${this.config.get('STORAGE_DIR')}/${
+        patchToSave.uuid
+      }`;
       await mkdir(storageDir);
       const processedFiles = await processFiles(files, storageDir);
 

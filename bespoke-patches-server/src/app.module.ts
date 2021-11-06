@@ -25,7 +25,7 @@ const entities = [Patch, ActionToken];
     TypeOrmModule.forRoot({
       name: 'default',
       type: 'sqlite',
-      database: '../storage/data.sq3',
+      database: `${process.env.STORAGE_DIR}/data.sq3`,
       entities,
       synchronize: true,
     }),
