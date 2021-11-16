@@ -1,10 +1,16 @@
-import { gql, useQuery } from "@apollo/client";
-import { createContext, useMemo, useState } from "react";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { PatchSummary } from "./patch.types";
 
 const searchGQL = gql`
-  query ($search: String!, $tags: [String!]!) {
-    patches(search: $search, tags: $tags) {
+  query ($search: String!, $tags: [String!]!, $offset: Int, $limit: Int) {
+    patches(search: $search, tags: $tags, offset: $offset, limit: $limit) {
       uuid
       tags
       author
@@ -31,12 +37,17 @@ export interface IUseData {
   setSearchState: (s: string | undefined) => void;
   search: string;
   selectedTags: string[];
+  loadMore: () => boolean;
+  mightHaveMore: boolean;
 }
 
 export const DataContext = createContext<Partial<IUseData>>({});
+const LIMIT = 50;
 
 const useData = (): IUseData => {
   const [searchState, setSearchState] = useState<string>();
+  const [alreadyLoaded, setAlreadyLoaded] = useState<PatchSummary[]>([]);
+  const [lastPage, setLastPage] = useState(0);
 
   const { search, selectedTags } = useMemo(() => {
     let se = "";
@@ -55,15 +66,16 @@ const useData = (): IUseData => {
     return { search: se, selectedTags: seTags };
   }, [searchState]);
 
-  const { data, loading, error } = useQuery(searchGQL, {
-    variables: { search, tags: selectedTags },
-  });
+  const [list, { data, loading, error }] = useLazyQuery(searchGQL);
 
   const { data: resultTags } = useQuery(tagsGQL);
 
   const filteredPatchList = useMemo(
-    () => (data?.patches ? (data.patches as PatchSummary[]) : []),
-    [data]
+    () => [
+      ...alreadyLoaded,
+      ...(data?.patches ? (data.patches as PatchSummary[]) : []),
+    ],
+    [alreadyLoaded, data]
   );
 
   const tags = useMemo(() => {
@@ -73,14 +85,44 @@ const useData = (): IUseData => {
     return new Set<string>();
   }, [resultTags]);
 
+  const mightHaveMore = useMemo(() => data?.patches.length === LIMIT, [data]);
+
+  const loadMore = useCallback(() => {
+    const page = lastPage + 1;
+    setLastPage(page);
+    setAlreadyLoaded(filteredPatchList);
+    if (data?.patches.length < LIMIT) {
+      return false;
+    }
+    list({
+      variables: {
+        search,
+        tags: selectedTags,
+        offset: page * LIMIT,
+        limit: LIMIT,
+      },
+    });
+    return true;
+  }, [data, filteredPatchList, lastPage, list, search, selectedTags]);
+
+  useEffect(() => {
+    setAlreadyLoaded([]);
+    setLastPage(0);
+    list({
+      variables: { search, tags: selectedTags, offset: 0, limit: LIMIT },
+    });
+  }, [list, search, selectedTags]);
+
   return {
     isLoaded: !loading,
     isError: !!error,
     filteredPatchList,
+    loadMore,
     tags,
     search,
     selectedTags,
     setSearchState,
+    mightHaveMore,
   };
 };
 

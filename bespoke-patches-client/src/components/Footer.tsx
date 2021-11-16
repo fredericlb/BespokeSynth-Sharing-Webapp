@@ -77,6 +77,10 @@ const Footer: React.FC = () => {
         </button>
         )
       </div>
+      <div>
+        <a href="/api/docs">Rest API docs</a>&nbsp;|&nbsp;
+        <a href="/graphql">GraphQL endpoint</a>
+      </div>
     </div>
   );
 };

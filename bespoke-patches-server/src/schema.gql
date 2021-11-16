@@ -36,15 +36,33 @@ type ActionTokenOutput {
 
 type Query {
   tags: [String!]!
-  patch(token: String, uuid: String!): PatchOutput!
-  patches(search: String = null, tags: [String!] = []): [PatchOutput!]!
+
+  """Retrieves a full patch"""
+  patch(
+    token: String!
+
+    """Patch identifier"""
+    uuid: String!
+  ): PatchOutput!
+
+  """List patches (brief format) based on search input and tags"""
+  patches(limit: Int = 20, offset: Int = 0, search: String = null, tags: [String!] = []): [PatchOutput!]!
+
+  """Check if an action token has been activated through its uuid"""
   checkActionToken(uuid: String!): ActionTokenOutput!
 }
 
 type Mutation {
+  """Approve (make it visible) or revoke (delete) a patch """
   moderatePatch(approved: Boolean!, token: String, uuid: String!): Boolean!
+
+  """Upload patch after getting an action token"""
   uploadPatch(files: [Upload!]!, tokenUuid: String!, uploadInfo: UploadPatchInput!): String!
+
+  """Create a new action token and send validation mail"""
   createActionToken(mail: String!): ActionTokenOutput!
+
+  """Enables an action token"""
   enableToken(token: String!, uuid: String!): ActionTokenOutput!
 }
 
@@ -58,8 +76,4 @@ input UploadPatchInput {
   tags: [String!]!
   summary: String!
   description: String
-}
-
-type Subscription {
-  actionTokenEnabled(uuid: String!): ActionTokenOutput!
 }

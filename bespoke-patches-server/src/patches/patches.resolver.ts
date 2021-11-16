@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ActionTokenService } from 'src/action-token/action-token.service';
 import { MailService } from 'src/mail/mail.service';
 import { Patch, PatchOutput } from './patch.model';
@@ -106,16 +106,21 @@ export class PatchesResolver {
     return this.service.getAllTags();
   }
 
-  @Query(() => PatchOutput)
+  @Query(() => PatchOutput, {
+    description: 'Retrieves a full patch',
+  })
   async patch(
-    @Args('uuid') uuid: string,
-    @Args('token', { nullable: true }) token: string | null,
+    @Args('uuid', { description: 'Patch identifier' }) uuid: string,
+    @Args('token', {})
+    token: string | null,
   ) {
     console.log('token', token);
     return this.service.get(uuid, token);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, {
+    description: 'Approve (make it visible) or revoke (delete) a patch ',
+  })
   async moderatePatch(
     @Args('uuid') uuid: string,
     @Args('token', { nullable: true }) token: string | null,
@@ -131,16 +136,24 @@ export class PatchesResolver {
     return approved;
   }
 
-  @Query(() => [PatchOutput])
+  @Query(() => [PatchOutput], {
+    description: 'List patches (brief format) based on search input and tags',
+  })
   async patches(
     @Args('tags', { defaultValue: [], type: () => [String] }) tags: string[],
     @Args('search', { defaultValue: null, type: () => String })
     search: string | null,
+    @Args('offset', { defaultValue: 0, type: () => Int })
+    offset: number,
+    @Args('limit', { defaultValue: 20, type: () => Int })
+    limit: number,
   ) {
-    return this.service.find(tags, search);
+    return this.service.find(tags, search, offset, limit);
   }
 
-  @Mutation(() => String)
+  @Mutation(() => String, {
+    description: 'Upload patch after getting an action token',
+  })
   async uploadPatch(
     @Args('uploadInfo')
     uploadInfo: UploadPatchInput,

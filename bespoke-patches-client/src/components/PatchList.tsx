@@ -1,4 +1,5 @@
 import { mergeStyleSets } from "@fluentui/merge-styles";
+import { DefaultButton } from "@fluentui/react";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { DataContext, IUseData } from "../hooks/useData";
@@ -15,10 +16,17 @@ const $ = mergeStyleSets({
       gridTemplateColumns: "1fr",
     },
   },
+  moreButton: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: 20,
+  },
 });
 
 const PatchList: React.FC = () => {
-  const { filteredPatchList } = useContext(DataContext) as IUseData;
+  const { filteredPatchList, mightHaveMore, loadMore } = useContext(
+    DataContext
+  ) as IUseData;
   const { t } = useTranslation();
 
   return (
@@ -30,6 +38,13 @@ const PatchList: React.FC = () => {
           <PatchItem patch={p} key={p.uuid} isList />
         ))}
       </div>
+      {mightHaveMore && (
+        <div className={$.moreButton}>
+          <DefaultButton iconProps={{ iconName: "refresh" }} onClick={loadMore}>
+            Load more
+          </DefaultButton>
+        </div>
+      )}
     </div>
   );
 };

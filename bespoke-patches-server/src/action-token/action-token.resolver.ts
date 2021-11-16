@@ -13,7 +13,9 @@ export class ActionTokenResolver {
     private mailService: MailService,
   ) {}
 
-  @Mutation(() => ActionTokenOutput)
+  @Mutation(() => ActionTokenOutput, {
+    description: 'Create a new action token and send validation mail',
+  })
   public async createActionToken(
     @Args('mail') mail: string,
   ): Promise<ActionTokenOutput> {
@@ -24,23 +26,18 @@ export class ActionTokenResolver {
     return at;
   }
 
-  @Subscription(() => ActionTokenOutput, {
-    filter: (payload, variables) => {
-      return payload.actionTokenEnabled.uuid === variables.uuid;
-    },
+  @Query(() => ActionTokenOutput, {
+    description: 'Check if an action token has been activated through its uuid',
   })
-  public async actionTokenEnabled(@Args('uuid') uuid: string) {
-    return pubSub.asyncIterator('actionTokenEnabled');
-  }
-
-  @Query(() => ActionTokenOutput)
   public async checkActionToken(
     @Args('uuid') uuid: string,
   ): Promise<ActionTokenOutput> {
     return this.actionTokenService.get(uuid);
   }
 
-  @Mutation(() => ActionTokenOutput)
+  @Mutation(() => ActionTokenOutput, {
+    description: 'Enables an action token',
+  })
   public async enableToken(
     @Args('uuid') uuid: string,
     @Args('token') token: string,

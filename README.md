@@ -37,6 +37,9 @@ $ cd bespoke-patches-server && npm start
 - Copy the docker-compose example and set it with your own vars
 - ```$ docker-compose up```
 
+# API
+
+The server is GraphQL first and uses Sofa to provide a REST Api. Currently the REST API is only available for queries as mutations including files is not yet supported by SOFA.
 # Contributing
 
 Every contributions are welcome. The project uses husky with eslint/prettier/commitlint to maintain consistent coding style, please don't skip the corresponding git hooks. 

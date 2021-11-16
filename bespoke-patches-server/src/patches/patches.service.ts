@@ -24,7 +24,12 @@ export class PatchesService {
     return Array.from(tags);
   }
 
-  public async find(tags: string[], search: string | null): Promise<Patch[]> {
+  public async find(
+    tags: string[],
+    search: string | null,
+    offset: number,
+    limit: number,
+  ): Promise<Patch[]> {
     const builder = this.repository
       .createQueryBuilder('p')
       .where('p_status = :status', { status: PatchStatus.APPROVED });
@@ -43,6 +48,11 @@ export class PatchesService {
         tags: `%,${tags.sort().join(',')},%`,
       });
     }
+
+    builder.orderBy('publicationDate', 'DESC');
+
+    builder.limit(limit);
+    builder.offset(offset);
 
     const patches = await builder.getMany();
 
