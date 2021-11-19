@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@fluentui/react";
 import { registerUmamiScript } from "@parcellab/react-use-umami";
 import { initializeIcons } from "@uifabric/icons";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Error from "./components/Error";
 import Footer from "./components/Footer";
@@ -12,9 +12,10 @@ import useData, { DataContext } from "./hooks/useData";
 import initLocales from "./i18n";
 import Home from "./pages/Home";
 import Patch from "./pages/Patch";
-import TokenActivation from "./pages/TokenActivation";
-import Upload from "./pages/Upload";
 import myTheme from "./theme/fluenceTheme";
+
+const Upload = React.lazy(() => import("./pages/Upload"));
+const TokenActivation = React.lazy(() => import("./pages/TokenActivation"));
 
 initializeIcons();
 
@@ -42,24 +43,26 @@ const Inner: React.FC = () => {
       {dataAPI.isLoaded && dataAPI.isError && <Error />}
       {dataAPI.isLoaded && !dataAPI.isError && (
         <Section>
-          <Switch>
-            <Route exact path="/" component={Home} />
-            <Route path="/search/:searchState" component={Home} />
-            <Route path="/patch/:id" component={Patch} />
-            <Route path="/upload" component={Upload} />
-            <Route
-              path="/validation/access-token/:uuid"
-              component={TokenActivation}
-            />
-            <Route
-              path="*"
-              render={() => (
-                <div style={{ marginTop: 120, textAlign: "center" }}>
-                  Page not found :(
-                </div>
-              )}
-            />
-          </Switch>
+          <Suspense fallback={<Loader full />}>
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/search/:searchState" component={Home} />
+              <Route path="/patch/:id" component={Patch} />
+              <Route path="/upload" component={Upload} />
+              <Route
+                path="/validation/access-token/:uuid"
+                component={TokenActivation}
+              />
+              <Route
+                path="*"
+                render={() => (
+                  <div style={{ marginTop: 120, textAlign: "center" }}>
+                    Page not found :(
+                  </div>
+                )}
+              />
+            </Switch>
+          </Suspense>
         </Section>
       )}
       <Footer />

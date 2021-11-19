@@ -9,6 +9,7 @@ import {
 } from "@fluentui/react";
 import useUmami from "@parcellab/react-use-umami";
 import React, {
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -16,9 +17,7 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import ReactMarkdown from "react-markdown";
 import { useParams, useHistory, useLocation } from "react-router-dom";
-import BSKViz from "../components/BSKViz";
 import DocumentTitle from "../components/DocumentTitle";
 import Error from "../components/Error";
 import Loader from "../components/Loader";
@@ -27,6 +26,9 @@ import ScriptsModal from "../components/ScriptsModal";
 import SectionTitle from "../components/Typography";
 import { Patch, PatchStatus } from "../hooks/patch.types";
 import { MOBILE } from "../theme/constants";
+
+const BSKViz = React.lazy(() => import("../components/BSKViz"));
+const ReactMarkdown = React.lazy(() => import("react-markdown"));
 
 const patchGQL = gql`
   query ($id: String!, $token: String) {
@@ -269,7 +271,9 @@ const PatchPage: React.FC = () => {
             <div className={$.viz}>
               <SectionTitle>{t("Patch.viz")}</SectionTitle>
               {fullPatch.content?.modules && (
-                <BSKViz modules={fullPatch.content.modules} />
+                <Suspense fallback="...">
+                  <BSKViz modules={fullPatch.content.modules} />
+                </Suspense>
               )}
             </div>
             <div className={$.samples}>
@@ -296,7 +300,9 @@ const PatchPage: React.FC = () => {
             <div className="mdContent">{t("Patch.no_description")}</div>
           ) : (
             <div className="mdContent">
-              <ReactMarkdown>{fullPatch.description || ""}</ReactMarkdown>
+              <Suspense fallback={fullPatch.description || ""}>
+                <ReactMarkdown>{fullPatch.description || ""}</ReactMarkdown>
+              </Suspense>
             </div>
           )}
         </div>

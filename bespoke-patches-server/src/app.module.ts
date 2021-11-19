@@ -95,6 +95,7 @@ export class AppModule {
 
     const { httpAdapter } = this.httpAdapterHost;
     const app: Application = httpAdapter.getInstance();
+
     const { schema } = this.schemaHost;
     const openApi = OpenAPI({
       schema,

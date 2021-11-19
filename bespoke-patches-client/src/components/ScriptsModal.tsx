@@ -6,11 +6,11 @@ import {
   PivotItem,
   PrimaryButton,
 } from "@fluentui/react";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import $ from "../theme/modal";
+
+const SyntaxHighlighter = React.lazy(() => import("./SyntaxHighlighter"));
 
 const ScriptsModal: React.FC<{
   scripts: { name: string; content: string }[];
@@ -63,9 +63,11 @@ const ScriptsModal: React.FC<{
           {scripts.map(({ name, content }) => (
             <PivotItem headerText={name}>
               <div className={$.textRead}>
-                <SyntaxHighlighter language="python" style={docco}>
-                  {content}
-                </SyntaxHighlighter>
+                <Suspense fallback="...">
+                  <SyntaxHighlighter language="python">
+                    {content}
+                  </SyntaxHighlighter>
+                </Suspense>
               </div>
             </PivotItem>
           ))}

@@ -1,8 +1,8 @@
 import { IconButton, Modal } from "@fluentui/react";
-import React, { useEffect } from "react";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import React, { Suspense, useEffect } from "react";
 import $ from "../theme/modal";
+
+const SyntaxHighlighter = React.lazy(() => import("./SyntaxHighlighter"));
 
 const TextModal: React.FC<{
   type: "comment" | "python";
@@ -41,15 +41,15 @@ const TextModal: React.FC<{
       </div>
       <div className={$.body}>
         <div className={$.textRead}>
-          {type === "python" ? (
-            <SyntaxHighlighter language="python" style={docco}>
-              {content}
-            </SyntaxHighlighter>
-          ) : (
-            <SyntaxHighlighter language="markdown" style={docco}>
-              {content}
-            </SyntaxHighlighter>
-          )}
+          <Suspense fallback="...">
+            {type === "python" ? (
+              <SyntaxHighlighter language="python">{content}</SyntaxHighlighter>
+            ) : (
+              <SyntaxHighlighter language="markdown">
+                {content}
+              </SyntaxHighlighter>
+            )}
+          </Suspense>
         </div>
       </div>
     </Modal>
