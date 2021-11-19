@@ -45,6 +45,7 @@ const patchGQL = gql`
       description
       content
       status
+      appVersion
     }
   }
 `;

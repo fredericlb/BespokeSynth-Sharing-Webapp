@@ -33,6 +33,7 @@ export default {
     author: "author",
     date: "date",
     revision: "revision",
+    appVersion: "version",
     download: "Download",
   },
 

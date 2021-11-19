@@ -6,7 +6,7 @@ export interface PatchSummary {
   title: string;
   publicationDate: string;
   coverImage?: string;
-  revision: number;
+  appVersion: string;
 }
 
 export interface Module {

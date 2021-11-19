@@ -153,9 +153,9 @@ const PatchItem: React.FC<{
             </div>
             <div className={$.separator}>
               <span className={$.subpatchTitle}>
-                {t("PatchItem.revision")}:{" "}
+                {t("PatchItem.appVersion")}:{" "}
               </span>{" "}
-              {patch.revision}
+              {patch.appVersion}
             </div>
           </div>
           <div className={$.tags}>
