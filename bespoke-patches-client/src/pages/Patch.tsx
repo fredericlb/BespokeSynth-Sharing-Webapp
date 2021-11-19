@@ -17,7 +17,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, useLocation } from "react-router-dom";
 import BSKViz from "../components/BSKViz";
 import DocumentTitle from "../components/DocumentTitle";
 import Error from "../components/Error";
@@ -40,7 +40,8 @@ const patchGQL = gql`
       coverImage
       revision
       audioSamples
-      bskFile
+      type
+      bsFile
       description
       content
       status
@@ -85,8 +86,10 @@ const AudioItem: React.FC<{ src: string; fname: string }> = ({
 };
 
 const $ = mergeStyleSets({
-  back: {
+  top: {
     marginTop: 40,
+  },
+  back: {
     marginBottom: 20,
   },
   viz: {
@@ -124,6 +127,8 @@ const PatchPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   useUmami(`/patch/${id}`);
   const { t } = useTranslation();
+  const { state: { search: backLink } = {} } =
+    useLocation<{ search?: string }>();
   const [
     moderatePatch,
     { data: moderatePatchData, error: moderatePatchError },
@@ -204,8 +209,8 @@ const PatchPage: React.FC = () => {
       return;
     }
     const a = document.createElement("a");
-    a.download = fullPatch.bskFile;
-    a.href = `/files/${fullPatch.uuid}/${fullPatch.bskFile}`;
+    a.download = fullPatch.bsFile;
+    a.href = `/files/${fullPatch.uuid}/${fullPatch.bsFile}`;
     a.click();
   }, [fullPatch]);
 
@@ -218,7 +223,7 @@ const PatchPage: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className={$.top}>
       {showScriptModal && (
         <ScriptsModal
           scripts={scripts}
@@ -234,13 +239,15 @@ const PatchPage: React.FC = () => {
           }}
         />
       )}
-      <DefaultButton
-        onClick={() => h.goBack()}
-        iconProps={{ iconName: "back" }}
-        className={$.back}
-      >
-        {t("Patch.back")}
-      </DefaultButton>
+      {backLink && (
+        <DefaultButton
+          onClick={() => h.push(backLink)}
+          iconProps={{ iconName: "back" }}
+          className={$.back}
+        >
+          {t("Patch.back")}
+        </DefaultButton>
+      )}
 
       <PatchItem
         isList={false}

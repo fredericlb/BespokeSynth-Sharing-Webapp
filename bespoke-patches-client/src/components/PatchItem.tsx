@@ -1,8 +1,8 @@
 import { makeStyles, PrimaryButton, Stack } from "@fluentui/react";
-import React, { useContext } from "react";
+import React, { CSSProperties, useContext } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router-dom";
+import { useHistory, Link, useLocation } from "react-router-dom";
 import { PatchSummary } from "../hooks/patch.types";
 import { DataContext, IUseData } from "../hooks/useData";
 import { MOBILE } from "../theme/constants";
@@ -27,6 +27,7 @@ const useStyle = makeStyles(() => ({
     borderBottom: "3px solid #676767",
     justifyContent: "space-between",
     paddingRight: 8,
+    textDecoration: "none",
   },
   content: {
     padding: 8,
@@ -101,20 +102,40 @@ const PatchItem: React.FC<{
   const { search, selectedTags } = useContext(DataContext) as IUseData;
   const h = useHistory();
   const { t } = useTranslation();
+  const { pathname } = useLocation();
+  const getTagStyle = (tag: string): CSSProperties => {
+    if (tag === "patch") {
+      return { backgroundColor: "#ff7750", color: "black" };
+    }
+    if (tag === "prefab") {
+      return { backgroundColor: "#bc42f5", color: "black" };
+    }
+    if (selectedTags.includes(tag)) {
+      return { background: "yellow", color: "black" };
+    }
+
+    return {};
+  };
+  const $title = (
+    <Highlighter
+      highlightClassName="highlight"
+      searchWords={[search]}
+      autoEscape
+      textToHighlight={patch.title}
+    />
+  );
   return (
     <div className={$.root}>
-      <div
-        role="button"
-        onClick={() => !onDownload && h.push(`/patch/${patch.uuid}`)}
-        className={`${$.title} ${isList && $.titleInList}`}
-      >
-        <Highlighter
-          highlightClassName="highlight"
-          searchWords={[search]}
-          autoEscape
-          textToHighlight={patch.title}
-        />
-      </div>
+      {isList ? (
+        <Link
+          to={{ pathname: `/patch/${patch.uuid}`, state: { search: pathname } }}
+          className={`${$.title} ${isList && $.titleInList}`}
+        >
+          {$title}
+        </Link>
+      ) : (
+        <div className={`${$.title} ${isList && $.titleInList}`}>{$title}</div>
+      )}
       <Stack
         className={$.content}
         verticalAlign="center"
@@ -139,15 +160,7 @@ const PatchItem: React.FC<{
           </div>
           <div className={$.tags}>
             {patch.tags.map((tag) => (
-              <div
-                className={$.tag}
-                key={tag}
-                style={
-                  selectedTags.includes(tag)
-                    ? { background: "yellow", color: "black" }
-                    : {}
-                }
-              >
+              <div className={$.tag} key={tag} style={getTagStyle(tag)}>
                 {tag}
               </div>
             ))}
