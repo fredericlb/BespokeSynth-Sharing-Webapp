@@ -23,7 +23,7 @@ export enum PatchStatus {
   APPROVED = "APPROVED",
 }
 export interface Patch extends PatchSummary {
-  bskFile: string;
+  bsFile: string;
   audioSamples: string[];
   content: {
     modules: Module[];

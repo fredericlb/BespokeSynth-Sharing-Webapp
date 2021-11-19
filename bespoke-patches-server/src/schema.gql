@@ -4,10 +4,12 @@
 
 type PatchOutput {
   uuid: String!
+  type: PatchType!
   title: String!
   author: String!
+  appVersion: String!
   tags: [String!]!
-  bskFile: String!
+  bsFile: String!
   coverImage: String
   audioSamples: [String!]!
   summary: String!
@@ -16,6 +18,11 @@ type PatchOutput {
   revision: Int!
   publicationDate: DateTime!
   content: String!
+}
+
+enum PatchType {
+  PATCH
+  PREFAB
 }
 
 enum PatchStatus {
@@ -39,7 +46,7 @@ type Query {
 
   """Retrieves a full patch"""
   patch(
-    token: String!
+    token: String
 
     """Patch identifier"""
     uuid: String!
@@ -56,7 +63,9 @@ type Mutation {
   """Approve (make it visible) or revoke (delete) a patch """
   moderatePatch(approved: Boolean!, token: String, uuid: String!): Boolean!
 
-  """Upload patch after getting an action token"""
+  """
+  Upload patch/prefab (type based on file extension) after getting an action token
+  """
   uploadPatch(files: [Upload!]!, tokenUuid: String!, uploadInfo: UploadPatchInput!): String!
 
   """Create a new action token and send validation mail"""
@@ -71,6 +80,7 @@ scalar Upload
 
 input UploadPatchInput {
   title: String!
+  version: String!
   author: String!
   mail: String!
   tags: [String!]!

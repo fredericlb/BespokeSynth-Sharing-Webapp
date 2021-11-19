@@ -17,6 +17,10 @@ export class UploadPatchInput {
   @Field()
   title: string;
 
+  @Field()
+  @IsNotEmpty()
+  version: string;
+
   @MinLength(3)
   @MaxLength(50)
   @Field()

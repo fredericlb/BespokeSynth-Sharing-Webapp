@@ -12,8 +12,17 @@ export enum PatchStatus {
   APPROVED,
 }
 
+export enum PatchType {
+  PATCH = 'patch',
+  PREFAB = 'prefab',
+}
+
 registerEnumType(PatchStatus, {
   name: 'PatchStatus',
+});
+
+registerEnumType(PatchType, {
+  name: 'PatchType',
 });
 
 @ObjectType()
@@ -23,6 +32,10 @@ export class Patch {
   @PrimaryColumn()
   uuid: string;
 
+  @Field(() => PatchType)
+  @Column()
+  type: PatchType;
+
   @Field(() => String)
   @Column()
   title: string;
@@ -30,6 +43,10 @@ export class Patch {
   @Field(() => String)
   @Column()
   author: string;
+
+  @Field(() => String)
+  @Column()
+  appVersion: string;
 
   @Field(() => String)
   @Column()
@@ -43,7 +60,7 @@ export class Patch {
 
   @Field(() => String)
   @Column()
-  bskFile: string;
+  bsFile: string;
 
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })

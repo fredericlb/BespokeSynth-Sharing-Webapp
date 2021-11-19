@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ActionTokenService } from 'src/action-token/action-token.service';
 import { MailService } from 'src/mail/mail.service';
-import { Patch, PatchOutput } from './patch.model';
+import { Patch, PatchOutput, PatchType } from './patch.model';
 import { PatchesService } from './patches.service';
 import { UploadPatchInput } from './upload-patch.input';
 import { GraphQLUpload, FileUpload } from 'graphql-upload';
@@ -19,7 +19,7 @@ const processFiles = async (
 
   for (const f of files) {
     const fileInfos = await f;
-    let type: 'image' | 'sound' | 'bsk' = null;
+    let type: 'image' | 'sound' | 'bsk' | 'pfb' = null;
     switch (fileInfos.mimetype) {
       case 'image/jpeg':
       case 'image/png':
@@ -33,6 +33,8 @@ const processFiles = async (
       default:
         if (fileInfos.filename.endsWith('.bsk')) {
           type = 'bsk';
+        } else if (fileInfos.filename.endsWith('.pfb')) {
+          type = 'pfb';
         } else {
           throw new Error('Unknown file type received');
         }
@@ -56,7 +58,7 @@ const processFiles = async (
   return outputFiles;
 };
 
-const bskJsonInfos = (path: string, pythonExec = 'python') => {
+const bsFileJsonInfos = (path: string, pythonExec = 'python') => {
   return new Promise((resolve, reject) => {
     exec(
       `${pythonExec} ./scripts/create_manifest.py ${path}`,
@@ -88,7 +90,7 @@ const removeFilesIfExists = (patch: Patch) => {
     }
   };
 
-  remove(patch.bskFile);
+  remove(patch.bsFile);
   remove(patch.coverImage);
   (patch.audioSamples || []).map((as) => remove(as));
 };
@@ -111,10 +113,9 @@ export class PatchesResolver {
   })
   async patch(
     @Args('uuid', { description: 'Patch identifier' }) uuid: string,
-    @Args('token', {})
+    @Args('token', { nullable: true })
     token: string | null,
   ) {
-    console.log('token', token);
     return this.service.get(uuid, token);
   }
 
@@ -152,7 +153,8 @@ export class PatchesResolver {
   }
 
   @Mutation(() => String, {
-    description: 'Upload patch after getting an action token',
+    description:
+      'Upload patch/prefab (type based on file extension) after getting an action token',
   })
   async uploadPatch(
     @Args('uploadInfo')
@@ -180,14 +182,18 @@ export class PatchesResolver {
       const processedFiles = await processFiles(files, storageDir);
 
       const [bskFile] = processedFiles.filter(({ type }) => type === 'bsk');
+      const [pfbFile] = processedFiles.filter(({ type }) => type === 'pfb');
       const [imageFile] = processedFiles.filter(({ type }) => type === 'image');
       const sounds = processedFiles.filter(({ type }) => type === 'sound');
 
-      if (bskFile == null) {
+      if (bskFile == null && pfbFile == null) {
         throw new Error('No bsk file provided');
       }
 
-      patchToSave.bskFile = bskFile.name;
+      patchToSave.type = bskFile != null ? PatchType.PATCH : PatchType.PREFAB;
+      const bsFile = bskFile || pfbFile;
+
+      patchToSave.bsFile = bsFile.name;
 
       if (imageFile != null) {
         patchToSave.coverImage = imageFile.name;
@@ -195,11 +201,11 @@ export class PatchesResolver {
 
       patchToSave.audioSamples = sounds.map((x) => x.name);
 
-      const bskContent = await bskJsonInfos(
-        bskFile.path,
+      const bsContent = await bsFileJsonInfos(
+        bsFile.path,
         this.config.get('PYTHON_EXEC'),
       );
-      patchToSave.content = JSON.stringify(bskContent);
+      patchToSave.content = JSON.stringify(bsContent);
     } catch (e) {
       removeFilesIfExists(patchToSave);
       console.error(e);
@@ -212,7 +218,11 @@ export class PatchesResolver {
       patchToSave.title = uploadInfo.title;
       patchToSave.author = uploadInfo.author;
       patchToSave.mail = uploadInfo.mail;
-      patchToSave.tags = uploadInfo.tags;
+      patchToSave.appVersion = uploadInfo.version;
+      patchToSave.tags = [
+        patchToSave.type,
+        ...uploadInfo.tags.filter((t) => !['patch', 'prefab'].includes(t)),
+      ];
       patchToSave.summary = uploadInfo.summary;
       patchToSave.description = uploadInfo.description;
 

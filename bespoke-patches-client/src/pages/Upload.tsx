@@ -1,6 +1,7 @@
 import { useMutation, gql, useQuery } from "@apollo/client";
 import { mergeStyleSets } from "@fluentui/merge-styles";
 import {
+  ComboBox,
   DefaultButton,
   PrimaryButton,
   ProgressIndicator,
@@ -11,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { Control, FieldValues, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
+import versions from "../../../bespokeVersions.json";
 import Attachments from "../components/Attachments";
 import ControlledTextField from "../components/ControlledTextField";
 import SectionTitle from "../components/Typography";
@@ -41,6 +43,7 @@ const uploadPatchGQL = gql`
     $mail: String!
     $tags: [String!]!
     $summary: String!
+    $version: String!
     $description: String
   ) {
     uploadPatch(
@@ -52,6 +55,7 @@ const uploadPatchGQL = gql`
         tags: $tags
         summary: $summary
         description: $description
+        version: $version
       }
       files: $files
     )
@@ -129,6 +133,7 @@ interface UploadInfo {
   tags: string[];
   title: string;
   description?: string;
+  version: string;
 }
 
 const ValidationTokenCheck: React.FC<{ uuid: string; onComplete: () => void }> =
@@ -153,6 +158,9 @@ const Upload: React.FC = () => {
 
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>([]);
+  const [version, setVersion] = useState<string>(
+    versions.filter(({ isDefault }) => isDefault)[0].version
+  );
   const [hasAttachmentsError, setAttachmentsError] = useState(false);
   const [status, setStatus] = useState(Status.NotSent);
   const [createActionToken, catInfos] = useMutation(createActionTokenGQL);
@@ -174,6 +182,7 @@ const Upload: React.FC = () => {
     const info = {
       ...data,
       tags: data.tags.split(",").map((x) => x.trim()),
+      version,
     } as UploadInfo;
     setUploadInfo(info);
     if (files.length === 0 || hasAttachmentsError) {
@@ -278,12 +287,30 @@ const Upload: React.FC = () => {
               />
             </Stack>
           </Stack>
-          <ControlledTextField
-            label={t("Upload.patchTags")}
-            control={ctrl}
-            name="tags"
-            rules={{ validate: isValidTags }}
-          />
+          <Stack horizontal gap={12}>
+            <Stack grow>
+              <ControlledTextField
+                label={t("Upload.patchTags")}
+                control={ctrl}
+                name="tags"
+                rules={{ validate: isValidTags }}
+              />
+            </Stack>
+            <Stack>
+              <ComboBox
+                selectedKey={version}
+                label="App version"
+                onChange={(_1, _2, c) =>
+                  c !== undefined ? setVersion(versions[c].version) : null
+                }
+                options={versions.map(({ version: v }) => ({
+                  key: v,
+                  text: v,
+                }))}
+              />
+            </Stack>
+          </Stack>
+
           <ControlledTextField
             multiline
             label={t("Upload.patchSummary")}

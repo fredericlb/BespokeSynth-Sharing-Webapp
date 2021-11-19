@@ -95,7 +95,7 @@ const Attachments: React.FC<{
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: ".png,.jpg,.bsk,.mp3",
+    accept: ".png,.jpg,.bsk,.pfb,.mp3",
   });
   const filesInfo = useMemo<{
     files: FileInfos[];
