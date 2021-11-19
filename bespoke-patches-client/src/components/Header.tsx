@@ -3,10 +3,17 @@ import {
   ComboBox,
   DefaultButton,
   PrimaryButton,
+  SelectableOptionMenuItemType,
   Stack,
   TextField,
 } from "@fluentui/react";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 import { DataContext, IUseData } from "../hooks/useData";
@@ -50,6 +57,8 @@ const $ = mergeStyleSets({
   },
 });
 
+const TYPES = ["prefab", "patch"];
+
 const Header: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
@@ -72,6 +81,28 @@ const Header: React.FC = () => {
     setSearch(search);
     setSelectedTags(selectedTags);
   }, [search, selectedTags]);
+
+  const options = useMemo(
+    () => [
+      {
+        key: "type",
+        text: "Type",
+        itemType: SelectableOptionMenuItemType.Header,
+      },
+      ...Array.from(tags)
+        .filter((tag) => TYPES.includes(tag))
+        .map((ta) => ({ key: ta, text: ta })),
+      {
+        key: "tags",
+        text: "Tags",
+        itemType: SelectableOptionMenuItemType.Header,
+      },
+      ...Array.from(tags)
+        .filter((tag) => !TYPES.includes(tag))
+        .map((ta) => ({ key: ta, text: ta })),
+    ],
+    [tags]
+  );
 
   return (
     <header className={$.header}>
@@ -116,7 +147,7 @@ const Header: React.FC = () => {
             />
             <ComboBox
               placeholder={t("Header.tags")}
-              options={Array.from(tags).map((ta) => ({ key: ta, text: ta }))}
+              options={options}
               multiSelect
               selectedKey={localSelectedTags}
               onChange={(values, option) =>
