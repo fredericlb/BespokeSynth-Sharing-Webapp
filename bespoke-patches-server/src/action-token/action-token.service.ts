@@ -48,14 +48,16 @@ export class ActionTokenService {
     await this.repository.remove(actionToken);
   }
 
-  public async create(): Promise<ActionToken> {
+  public async create(alreadyEnabled = false): Promise<ActionToken> {
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 2);
     const actionToken = new ActionToken();
     actionToken.uuid = uuidv4();
     actionToken.token = uuidv4();
     actionToken.expirationDate = expirationDate;
-
+    if (alreadyEnabled) {
+      actionToken.enabled = true;
+    }
     await this.repository.save(actionToken);
 
     return actionToken;

@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 import { Action } from 'rxjs/internal/scheduler/Action';
@@ -11,6 +12,7 @@ export class ActionTokenResolver {
   constructor(
     private actionTokenService: ActionTokenService,
     private mailService: MailService,
+    private config: ConfigService,
   ) {}
 
   @Mutation(() => ActionTokenOutput, {
@@ -19,9 +21,13 @@ export class ActionTokenResolver {
   public async createActionToken(
     @Args('mail') mail: string,
   ): Promise<ActionTokenOutput> {
-    const at = await this.actionTokenService.create();
+    const at = await this.actionTokenService.create(
+      this.config.get<boolean>('DISABLE_ACTION_TOKEN_CHECK'),
+    );
 
-    this.mailService.sendActionTokenValidation(mail, at);
+    if (!this.config.get<boolean>('DISABLE_ACTION_TOKEN_CHECK')) {
+      this.mailService.sendActionTokenValidation(mail, at);
+    }
 
     return at;
   }
