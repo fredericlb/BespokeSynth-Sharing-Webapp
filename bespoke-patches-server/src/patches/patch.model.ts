@@ -64,6 +64,10 @@ export class Patch {
 
   @Field(() => String, { nullable: true })
   @Column({ nullable: true })
+  thumbnailImage?: string;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
   coverImage?: string;
 
   @Field(() => [String])

@@ -5,8 +5,8 @@ export interface PatchSummary {
   summary: string;
   title: string;
   publicationDate: string;
-  coverImage?: string;
   appVersion: string;
+  thumbnailImage?: string;
 }
 
 export interface Module {
@@ -28,6 +28,7 @@ export interface Patch extends PatchSummary {
   content: {
     modules: Module[];
   };
+  coverImage?: string;
   description?: string;
   status: PatchStatus;
 }

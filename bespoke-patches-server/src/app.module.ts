@@ -120,7 +120,6 @@ export class AppModule {
     );
 
     const openApiDefinitions = openApi.get();
-    console.log(openApiDefinitions);
 
     // remove upload related operations, SOFA does not support GRAPHQL uploads
     openApiDefinitions.paths['/api/moderate-patch'] = undefined;

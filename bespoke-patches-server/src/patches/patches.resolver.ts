@@ -10,6 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { mkdir, unlink } from 'fs/promises';
 import { createWriteStream, fstat, ReadStream } from 'fs';
 import { exec } from 'child_process';
+import * as imageThumbnail from "image-thumbnail";
+import * as fs from "fs/promises";
 
 const processFiles = async (
   files: Promise<FileUpload>[],
@@ -61,13 +63,11 @@ const processFiles = async (
 const bsFileJsonInfos = (path: string, pythonExec = 'python') => {
   return new Promise((resolve, reject) => {
     exec(
-      `${pythonExec} ./scripts/create_manifest.py ${path}`,
+      `${pythonExec} ./scripts/create_manifest.py "${path}"`,
       (err, stdout) => {
         if (err != null) {
           reject(err);
         } else {
-          console.log('---stdout');
-          console.log(stdout);
           try {
             resolve(JSON.parse(stdout));
           } catch (e) {
@@ -78,6 +78,43 @@ const bsFileJsonInfos = (path: string, pythonExec = 'python') => {
     );
   });
 };
+
+const processImages = async (patch: Patch, imagePath: string, storageDir: string) => {
+  
+  try {
+    const options = {
+      width: 500, 
+      height: 250,
+      fit: "cover",
+      jpegOptions : { 
+        force:true, 
+        quality: 80 
+      }
+    } as any;
+    const data = await imageThumbnail(imagePath, options);
+    fs.writeFile(`${storageDir}/thumb.jpg`, data);
+    patch.thumbnailImage = "thumb.jpg";
+  } catch(e) {
+    console.warn(`Could not create thumbnail for ${patch.uuid}`, e);
+  }
+
+  try {
+    const options = {
+      width: 2000, 
+      height: 1000,
+      fit: "contain",
+      jpegOptions : { 
+        force: true,
+        quality: 80 
+      }
+    } as any;
+    const data = await imageThumbnail(imagePath, options);
+    fs.writeFile(`${storageDir}/cover.jpg`, data);
+    patch.coverImage = "cover.jpg";
+  } catch(e) {
+    console.warn(`Could not create cover for ${patch.uuid}`, e);
+  }
+}
 
 const removeFilesIfExists = (patch: Patch) => {
   const remove = async (path: string | null) => {
@@ -196,7 +233,7 @@ export class PatchesResolver {
       patchToSave.bsFile = bsFile.name;
 
       if (imageFile != null) {
-        patchToSave.coverImage = imageFile.name;
+        await processImages(patchToSave, imageFile.path, storageDir);
       }
 
       patchToSave.audioSamples = sounds.map((x) => x.name);

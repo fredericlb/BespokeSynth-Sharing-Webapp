@@ -10,6 +10,7 @@ type PatchOutput {
   appVersion: String!
   tags: [String!]!
   bsFile: String!
+  thumbnailImage: String
   coverImage: String
   audioSamples: [String!]!
   summary: String!

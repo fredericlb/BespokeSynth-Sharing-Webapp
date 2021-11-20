@@ -6,6 +6,7 @@ export default {
     no_audio_samples: "No audio samples",
     no_description: "No description",
     back: "Patch list",
+    image: "image"
   },
 
   PatchList: {
@@ -97,7 +98,7 @@ export default {
     noBSK: "Missing BSK/PFB file",
     tooMuchBSKs: "Only one BSK/PFB file is allowed",
     tooMuchImages: "Only one image file is allowed",
-    imageSize: "Max image size is 1mb",
+    imageTooLarge: "Max image size is 6mb",
     quotaExceeded: "Max files size is 70mb",
   },
 

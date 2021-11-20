@@ -6,11 +6,13 @@ import { useHistory, Link, useLocation } from "react-router-dom";
 import { PatchSummary } from "../hooks/patch.types";
 import { DataContext, IUseData } from "../hooks/useData";
 import { MOBILE } from "../theme/constants";
+import logo from "../theme/bespoke.png";
 
 const useStyle = makeStyles(() => ({
   root: {
     background: "#343434",
     position: "relative",
+    border: "1px solid #333"
   },
   title: {
     background: "#EFEFEF",
@@ -91,6 +93,15 @@ const useStyle = makeStyles(() => ({
   description: {
     marginTop: 12,
   },
+  thumb: {
+    height: 150,
+    backgroundColor: "#020202",
+    backgroundImage: `url("${logo}")`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundSize: "100px",
+    opacity: 0.5,
+  },
 }));
 
 const PatchItem: React.FC<{
@@ -128,10 +139,27 @@ const PatchItem: React.FC<{
     <div className={$.root}>
       {isList ? (
         <Link
-          to={{ pathname: `/patch/${patch.uuid}`, state: { search: pathname } }}
-          className={`${$.title} ${isList && $.titleInList}`}
+          to={{
+            pathname: `/patch/${patch.uuid}`,
+            state: { search: pathname },
+          }}
+          style={{textDecoration: "none"}}
         >
-          {$title}
+          <div className={`${$.title} ${isList && $.titleInList}`}>
+            {$title}
+          </div>
+          <div
+            className={$.thumb}
+            style={
+              patch.thumbnailImage
+                ? {
+                    backgroundImage: `url("/files/${patch.uuid}/${patch.thumbnailImage}")`,
+                    backgroundSize: "cover",
+                    opacity: 0.9,
+                  }
+                : {}
+            }
+          ></div>
         </Link>
       ) : (
         <div className={`${$.title} ${isList && $.titleInList}`}>{$title}</div>

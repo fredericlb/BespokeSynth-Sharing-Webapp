@@ -19,6 +19,7 @@ const searchGQL = gql`
       publicationDate
       coverImage
       appVersion
+      thumbnailImage
     }
   }
 `;

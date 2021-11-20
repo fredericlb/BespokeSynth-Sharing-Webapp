@@ -146,7 +146,7 @@ const Attachments: React.FC<{
     if (filesInfo.imagesCount > 1) {
       return "Attachments.tooMuchImages";
     }
-    if (filesInfo.imageSize > 1024) {
+    if (filesInfo.imageSize > 1024 * 6) {
       return "Attachments.imageTooLarge";
     }
     if (filesInfo.files.reduce((prev, acc) => prev + acc.size, 0) > MAX_SIZE) {

@@ -124,6 +124,10 @@ const $ = mergeStyleSets({
     alignItems: "center",
     padding: 10,
   },
+  image: {
+    height: 500,
+    backgroundSize: "contain"
+  }
 });
 
 const PatchPage: React.FC = () => {
@@ -294,7 +298,12 @@ const PatchPage: React.FC = () => {
               </ul>
             </div>
           </Stack>
-
+          {fullPatch.coverImage && (
+            <>
+            <SectionTitle>{t("Patch.image")}</SectionTitle>
+            <div className={$.image} style={{backgroundImage: `url("/files/${fullPatch.uuid}/${fullPatch.coverImage}")`}} />
+            </>
+          )}
           <SectionTitle>{t("Patch.description")}</SectionTitle>
           {(fullPatch.description || "").trim().length === 0 ? (
             <div className="mdContent">{t("Patch.no_description")}</div>
