@@ -83,7 +83,7 @@ export default {
     sendingPatch: "[2/2] Sending patch, please wait",
     error: "Something bad happened, you can try to submit your patch again",
     finished:
-      "Patch successfully sent, you will receive an email once its been validated",
+      "Patch successfully uploaded, you will receive an email once its been added to the home page and search engine. In the meantime you can share it with the following link :",
   },
 
   Form: {

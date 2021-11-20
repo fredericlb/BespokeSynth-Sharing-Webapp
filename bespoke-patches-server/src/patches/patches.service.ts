@@ -76,9 +76,8 @@ export class PatchesService {
         token,
       });
     } else {
-      builder.where('uuid = :uuid AND status = :status', {
+      builder.where('uuid = :uuid', {
         uuid,
-        status: PatchStatus.APPROVED,
       });
     }
 

@@ -8,7 +8,7 @@ import {
   Stack,
 } from "@fluentui/react";
 import useUmami from "@parcellab/react-use-umami";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Control, FieldValues, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router-dom";
@@ -93,10 +93,15 @@ const $ = mergeStyleSets({
     color: "white",
     padding: 5,
     boxSizing: "border-box",
-    height: 40,
+    height: 60,
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     paddingLeft: 20,
+    a: {
+      color: "white",
+      fontWeight: "bold"
+    }
   },
 });
 
@@ -181,7 +186,7 @@ const Upload: React.FC = () => {
   const onSubmit = (data: Record<string, string>) => {
     const info = {
       ...data,
-      tags: data.tags.split(",").map((x) => x.trim()),
+      tags: data.tags.split(",").map((x) => x.trim()).filter(x => x.length > 0),
       version,
     } as UploadInfo;
     setUploadInfo(info);
@@ -247,6 +252,10 @@ const Upload: React.FC = () => {
       setStatus(Status.Finished);
     }
   }, [upInfos, status, uploadRequestSent]);
+
+  const patchUrl = useMemo(() => {
+    return upInfos.data ? `${window.location.origin}/patch/${upInfos.data.uploadPatch}` : "";
+  }, [upInfos]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -347,7 +356,7 @@ const Upload: React.FC = () => {
             />
           )}
           {status === Status.Finished && (
-            <div className={$.finished}>{t("Upload.finished")}</div>
+            <div className={$.finished}>{t("Upload.finished")} <br/><a href={patchUrl}>{patchUrl}</a></div>
           )}
           {status === Status.Error && (
             <>

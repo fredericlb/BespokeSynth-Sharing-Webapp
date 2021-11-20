@@ -27,9 +27,8 @@ export class MailService {
   }
 
   async sendSubmittedPatch(patch: Patch) {
-    const url = `${this.config.get('URL')}/patch/${patch.uuid}?token=${
-      patch._token
-    }`;
+    const url = `${this.config.get('URL')}/patch/${patch.uuid}`;
+    const tokenUrl = `${url}?token=${patch._token}`;
 
     await this.mailerService.sendMail({
       to: patch.mail,
@@ -37,6 +36,7 @@ export class MailService {
       template: './uploadPatchUser',
       context: {
         title: patch.title,
+        url
       },
     });
 
@@ -46,7 +46,7 @@ export class MailService {
       template: './uploadPatchAdmin',
       context: {
         title: patch.title,
-        url,
+        url: tokenUrl,
       },
     });
   }
