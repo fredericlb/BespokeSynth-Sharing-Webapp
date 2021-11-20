@@ -42,7 +42,8 @@ class BSK:
             k = 0
             if script_rev >= 2:
                 extra_outputs = rint()
-            save_state_rev = rint()
+            if self.rev >= 422:
+                save_state_rev = rint()
             numcontrols = rint()
             for i in range(numcontrols):
                 cname = rstr()
@@ -57,11 +58,10 @@ class BSK:
         
         output = json.loads(rstr())
 
-        rev = rint()
-        output["rev"] = rev
-
-        if rev < 420 or rev > 422:
-            print("rev number should be 420<>422 : " + str(rev) )
+        self.rev = rint()
+        output["self.rev"] = self.rev
+        if self.rev < 420 or self.rev > 422:
+            print("rev number should be 420<>422 : " + str(self.rev) )
             sys.exit(3)
 
         scriptNodes = list(filter(lambda m: m["type"] == "script", output["modules"]))
