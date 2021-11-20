@@ -38,8 +38,11 @@ class BSK:
                 b = f.read(1)
 
         def get_script():
-            rev = rint()
+            script_rev = rint()
             k = 0
+            if script_rev >= 2:
+                extra_outputs = rint()
+            save_state_rev = rint()
             numcontrols = rint()
             for i in range(numcontrols):
                 cname = rstr()
@@ -47,8 +50,9 @@ class BSK:
                 if k == 6:
                     sys.exit(0)
                 if cname == "code": 
-                    rev = rint()
-                    return rstr()
+                    code_rev = rint()
+                    data = rstr()
+                    return data
                 to_msep("controlseparator")
         
         output = json.loads(rstr())
@@ -56,8 +60,8 @@ class BSK:
         rev = rint()
         output["rev"] = rev
 
-        if rev != 420:
-            print("rev number should be 420")
+        if rev < 420 or rev > 422:
+            print("rev number should be 420<>422 : " + str(rev) )
             sys.exit(3)
 
         scriptNodes = list(filter(lambda m: m["type"] == "script", output["modules"]))
