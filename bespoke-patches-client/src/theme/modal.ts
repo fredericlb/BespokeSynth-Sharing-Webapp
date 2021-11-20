@@ -34,6 +34,7 @@ const modalStyles = mergeStyleSets({
     justifyContent: "flex-end",
     paddingRight: "24px",
     paddingBottom: "16px",
+    marginTop: "24px"
   },
   closeIcon: {
     color: "#ABABAB",
@@ -46,6 +47,7 @@ const modalStyles = mergeStyleSets({
   },
   textRead: {
     minWidth: "40vw",
+    maxWidth: "50vw",
     maxHeight: "50vh",
     overflowY: "scroll",
     overflowX: "auto",
