@@ -126,7 +126,9 @@ const $ = mergeStyleSets({
   },
   image: {
     height: 500,
-    backgroundSize: "contain"
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center"
   }
 });
 
